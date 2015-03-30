@@ -61,4 +61,23 @@
         android:layout_alignParentEnd="true"
         android:onClick="stopLocationUpdates"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Address"
+        android:id="@+id/address"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get Last Location Address"
+        android:id="@+id/addressButton"
+        android:layout_below="@+id/address"
+        android:layout_centerHorizontal="true"
+        android:onClick="startIntentService"
+        />
 </RelativeLayout>

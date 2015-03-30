@@ -4,16 +4,19 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -161,6 +164,7 @@ public class ListActivity extends ActionBarActivity implements
     }
 
     public void stopLocationUpdates(View view) {
+        setButtonsEnabledState();
         stopLocationUpdates();
     }
 
@@ -172,6 +176,21 @@ public class ListActivity extends ActionBarActivity implements
 
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
+        }
+
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            // Determine whether a Geocoder is available.
+            if (!Geocoder.isPresent()) {
+                Toast.makeText(this, R.string.no_geocoder_available,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
+//            if (mAddressRequested) {
+//                startIntentService();
+//            }
         }
     }
 
@@ -300,6 +319,7 @@ public class ListActivity extends ActionBarActivity implements
     }
 
     public void startLocationUpdates(View view) {
+        setButtonsEnabledState();
         startLocationUpdates();
     }
 
@@ -329,5 +349,68 @@ public class ListActivity extends ActionBarActivity implements
         periodicLoc.setText("Latitude: " + String.valueOf(mCurrentLocation.getLatitude()) +
                 " Longitude: " + String.valueOf(mCurrentLocation.getLongitude()) +
                 " Last Update Time: " + String.valueOf(mLastUpdateTime));
+    }
+
+    public void startIntentService(View view) {
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        ((TextView)findViewById(R.id.address)).setText("Receiving Address...");
+        startIntentService();
+    }
+    /**
+     * Creates an intent, adds location data to it as an extra, and starts the intent service for
+     * fetching an address.
+     */
+    protected void startIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, MyGeoCoderIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        if(mCurrentLocation == null) {
+            mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        }
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
+    }
+
+    /**
+     * Shows a toast with the given text.
+     */
+    protected void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    protected void displayAddressOutput() {
+        TextView address = (TextView) findViewById(R.id.address);
+
+        address.setText(mAddressOutput);
+    }
+    private AddressResultReceiver mResultReceiver;
+    protected String mAddressOutput;
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            displayAddressOutput();
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                showToast(getString(R.string.address_found));
+            }
+
+        }
     }
 }
