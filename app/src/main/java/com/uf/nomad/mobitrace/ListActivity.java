@@ -44,7 +44,6 @@ public class ListActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
 
@@ -309,7 +308,7 @@ public class ListActivity extends ActionBarActivity implements
     LocationRequest mLocationRequest;
     Location mCurrentLocation;
     String mLastUpdateTime;
-    Boolean mRequestingLocationUpdates = true;
+    Boolean mRequestingLocationUpdates = false;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
