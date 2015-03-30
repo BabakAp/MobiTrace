@@ -1,3 +1,5 @@
+package com.uf.nomad.mobitrace.database;
+
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
@@ -32,6 +34,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_TIME = "date_time";
     public static final String COL_LOC_X = "location_x";
     public static final String COL_LOC_Y = "location_y";
+    public static final String COL_ACCU = "loc_accuracy";
+    public static final String COL_SPD = "speed";
     public static final String COL_STREET = "street_addr";
     public static final String COL_ACT_ID = "act_id"; //referencing activities.act_id
     public static final String COL_COMP = "compass";
@@ -68,6 +72,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     COL_TIME + " timestamp unique not null, " +
                     COL_LOC_X + " text, " +
                     COL_LOC_Y + " text, " +
+                    COL_ACCU + " float, " +
+                    COL_SPD + " float, " +
                     COL_STREET + " text, " +
                     COL_ACT_ID + " integer, " +
                     COL_COMP + " text, " +
@@ -99,7 +105,10 @@ public class DataBaseHelper extends SQLiteOpenHelper
         db.execSQL(DATABASE_CREATE_ACTIVITIES);
         db.execSQL(DATABASE_CREATE_TRACES);
         db.execSQL(DATABASE_CREATE_WIFI);
-        db.execSQL("PRAGMA foreign_keys = ON;");
+        db.execSQL("PRAGMA foreign_keys = TRUE;");
+
+        Log.w(DataBaseHelper.class.getName(),
+                "Schema Created Successfully!");
     }
 
     @Override
