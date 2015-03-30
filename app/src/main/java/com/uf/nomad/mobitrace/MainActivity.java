@@ -23,12 +23,13 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.uf.nomad.mobitrace.database.DataBaseHelper;
 
 import java.text.DateFormat;
 import java.util.Date;
 
 
-public class ListActivity extends ActionBarActivity implements
+public class MainActivity extends ActionBarActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
     private GoogleApiClient mGoogleApiClient;
@@ -44,6 +45,10 @@ public class ListActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+        DataBaseHelper dbh = new DataBaseHelper(getBaseContext());
+        dbh.getReadableDatabase();
+
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
 
@@ -251,7 +256,7 @@ public class ListActivity extends ActionBarActivity implements
 
         @Override
         public void onDismiss(DialogInterface dialog) {
-            ((ListActivity) getActivity()).onDialogDismissed();
+            ((MainActivity) getActivity()).onDialogDismissed();
         }
     }
 
