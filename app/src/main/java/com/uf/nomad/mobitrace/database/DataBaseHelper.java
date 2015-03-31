@@ -1,8 +1,8 @@
 package com.uf.nomad.mobitrace.database;
 
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteDatabase;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**

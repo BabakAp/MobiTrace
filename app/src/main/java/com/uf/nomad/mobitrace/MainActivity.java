@@ -44,7 +44,7 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list);
+        setContentView(R.layout.activity_main);
 
         DataBaseHelper dbh = new DataBaseHelper(getBaseContext());
         dbh.getReadableDatabase();
@@ -104,24 +104,10 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_list, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onResume() {
@@ -294,6 +280,34 @@ public class MainActivity extends ActionBarActivity implements
         super.onSaveInstanceState(savedInstanceState);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.main_activity:
+                Intent intent = new Intent(this,this.getClass());
+                startActivity(intent);
+                return true;
+            case R.id.item_list:
+                ListClicked();
+                return true;
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void ListClicked() {
+        Intent intent = new Intent(this, ItemListActivity.class);
+        startActivity(intent);
+    }
+
+    public void openSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
 
     public void getLocClicked(View view) {
         TextView mtext = (TextView) findViewById(R.id.loc);
@@ -417,4 +431,5 @@ public class MainActivity extends ActionBarActivity implements
 
         }
     }
+
 }
