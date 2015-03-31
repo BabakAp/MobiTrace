@@ -70,7 +70,7 @@ public class DataBaseHandler {
     REMEMBER TO CLOSE THE CURSOR AFTER USE!
      */
     public Cursor getAllTracesFromStreet() {
-        return database.rawQuery("select * from table",null);
+        return database.rawQuery("select * from TRACES",null);
 
         /*
         cursor.moveToFirst();
