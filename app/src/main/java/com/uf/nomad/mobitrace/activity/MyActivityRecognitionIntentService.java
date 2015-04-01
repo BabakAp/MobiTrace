@@ -42,8 +42,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
 
     private DataBaseHandler dataBaseHandler;
-
-
     private static final String TAG = "fetch-activity-intent-service";
 
     public MyActivityRecognitionIntentService() {
@@ -82,6 +80,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
             logActivityRecognitionResult(result);
 
             //TODO: store activity into database
+            dataBaseHandler.openWritable();
             if (dataBaseHandler == null) {
                 dataBaseHandler = new DataBaseHandler(this);
             }
@@ -91,8 +90,9 @@ public class MyActivityRecognitionIntentService extends IntentService {
                 confidences[i] = act.getConfidence();
                 i++;
             }
-            dataBaseHandler.insertActivityRecord(confidences);
-
+            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences);
+            Log.i(TAG, "Activity successfully inserted into DB");
+            dataBaseHandler.close();
 
             System.out.println("ACTIVITY " + result.getMostProbableActivity());
             // Get the most probable activity from the list of activities in the update
