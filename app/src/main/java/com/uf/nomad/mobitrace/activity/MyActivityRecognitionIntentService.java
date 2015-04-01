@@ -7,16 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
+import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,7 +41,8 @@ public class MyActivityRecognitionIntentService extends IntentService {
     private SharedPreferences mPrefs;
 
 
-    protected ResultReceiver mReceiver;
+    private DataBaseHandler dataBaseHandler;
+
 
     private static final String TAG = "fetch-activity-intent-service";
 
@@ -57,13 +56,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
-        // Check if receiver was properly registered.
-        if (mReceiver == null) {
-            Log.wtf(TAG, "No receiver received. There is nowhere to send the results.");
-//            return;
-        }
         // Get a handle to the repository
         mPrefs = getApplicationContext().getSharedPreferences(
                 ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -80,7 +73,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
         mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
 
         // If the intent contains an update
-        System.out.println("has Activity: " + ActivityRecognitionResult.hasResult(intent));
         if (ActivityRecognitionResult.hasResult(intent)) {
 
             // Get the update
@@ -89,11 +81,20 @@ public class MyActivityRecognitionIntentService extends IntentService {
             // Log the update
             logActivityRecognitionResult(result);
 
-            //TODO: send to the registered receiver
-//            deliverResultToReceiver(Constants.SUCCESS_RESULT,""+result.getMostProbableActivity() + " " + result.getMostProbableActivity().getConfidence());
+            //TODO: store activity into database
+            if (dataBaseHandler == null) {
+                dataBaseHandler = new DataBaseHandler(this);
+            }
+            int[] confidences = new int[8];
+            int i = 0;
+            for (DetectedActivity act : result.getProbableActivities()) {
+                confidences[i] = act.getConfidence();
+                i++;
+            }
+            dataBaseHandler.insertActivityRecord(confidences);
 
 
-            System.out.println("SUCCESS ON ACTIVITY DETECTION " + result.getMostProbableActivity());
+            System.out.println("ACTIVITY " + result.getMostProbableActivity());
             // Get the most probable activity from the list of activities in the update
             DetectedActivity mostProbableActivity = result.getMostProbableActivity();
 
@@ -271,13 +272,4 @@ public class MyActivityRecognitionIntentService extends IntentService {
         return "unknown";
     }
 
-    /**
-     * Sends a resultCode and message to the receiver.
-     */
-    private void deliverResultToReceiver(int resultCode, String message) {
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.RESULT_DATA_KEY, message);
-        System.out.println("Sending ");
-        mReceiver.send(resultCode, bundle);
-    }
 }
