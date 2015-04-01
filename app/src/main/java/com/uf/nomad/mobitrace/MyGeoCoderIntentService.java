@@ -7,6 +7,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -132,6 +133,17 @@ public class MyGeoCoderIntentService extends IntentService {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
         mReceiver.send(resultCode, bundle);
+
+        /**
+         * Creates a new Intent containing a Uri object
+         * BROADCAST_ACTION is a custom Intent action
+         */
+        Intent localIntent =
+                new Intent(Constants.BROADCAST_ACTION)
+                        // Puts the status into the Intent
+                        .putExtra(Constants.EXTENDED_DATA_STATUS, message);
+        // Broadcasts the Intent to receivers in this app.
+        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
     }
 
 }

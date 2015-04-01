@@ -24,4 +24,20 @@ public final class Constants {
      */
     public static final int DETECTION_INTERVAL_MILLISECONDS =
             MILLISECONDS_PER_SECOND * DETECTION_INTERVAL_SECONDS;
+
+    /**
+     * Location update request frequency
+     */
+    public static final int LOCATION_INTERVAL_SECONDS = 30;
+    public static final int LOCATION_INTERVAL_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * LOCATION_INTERVAL_SECONDS;
+
+    /**
+     * Custom intent action
+     */
+    public static final String BROADCAST_ACTION =
+            "com.uf.nomad.mobitrace.BROADCAST";
+    // Defines the key for the status "extra" in an Intent
+    public static final String EXTENDED_DATA_STATUS =
+            "com.uf.nomad.mobitrace.STATUS";
 }
