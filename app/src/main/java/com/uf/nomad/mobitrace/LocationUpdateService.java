@@ -1,12 +1,12 @@
 package com.uf.nomad.mobitrace;
 
+import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,6 +27,8 @@ public class LocationUpdateService extends Service implements
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
+    private NotificationManager mNM;
+    private int NOTIFICATION = R.string.location_service_started;
 
     public LocationUpdateService() {
     }
@@ -34,6 +36,11 @@ public class LocationUpdateService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        // Display a notification about us starting.  We put an icon in the status bar.
+        showNotification();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -49,6 +56,14 @@ public class LocationUpdateService extends Service implements
      */
     private void startLocationUpdates() {
 
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("LocationUpdateService", "Received start id " + startId + ": " + intent);
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        return START_STICKY;
     }
 
     @Override
@@ -76,17 +91,6 @@ public class LocationUpdateService extends Service implements
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
-
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-//        if (mLastLocation != null) {
-//            // Determine whether a Geocoder is available.
-//            if (!Geocoder.isPresent()) {
-//                Toast.makeText(this, R.string.no_geocoder_available,
-//                        Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//        }
     }
 
     /**
@@ -114,22 +118,46 @@ public class LocationUpdateService extends Service implements
 
     @Override
     public void onLocationChanged(Location location) {
-
+        mLastLocation = location;
+        //TODO: Store last received location into database
     }
 
-
-    private class LocationResponseReceiver extends BroadcastReceiver {
-        // Prevents instantiation
-        private LocationResponseReceiver() {
-        }
-        // Called when the BroadcastReceiver gets an Intent it's registered to receive
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            /**
-             * Handle Intents here.
-             */
-
-        }
+    /**
+     * Show a notification while this service is running.
+     */
+    private void showNotification() {
+        //TODO: fix the code here
+        // In this sample, we'll use the same text for the ticker and the expanded notification
+//        CharSequence text = getText(R.string.location_service_started);
+//
+//        // Set the icon, scrolling text and timestamp
+//        Notification notification = new Notification(R.drawable.stat_sample, text,
+//                System.currentTimeMillis());
+//
+//        // The PendingIntent to launch our activity if the user selects this notification
+//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+//                new Intent(this, LocalServiceActivities.Controller.class), 0);
+//
+//        // Set the info for the views that show in the notification panel.
+//        notification.setLatestEventInfo(this, getText(R.string.local_service_label),
+//                text, contentIntent);
+//
+//        // Send the notification.
+//        mNM.notify(NOTIFICATION, notification);
     }
+
+//    private class LocationResponseReceiver extends BroadcastReceiver {
+//        // Prevents instantiation
+//        private LocationResponseReceiver() {
+//        }
+//        // Called when the BroadcastReceiver gets an Intent it's registered to receive
+//
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            /**
+//             * Handle Intents here.
+//             */
+//
+//        }
+//    }
 }

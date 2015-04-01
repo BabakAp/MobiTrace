@@ -80,10 +80,10 @@ public class MyActivityRecognitionIntentService extends IntentService {
             logActivityRecognitionResult(result);
 
             //TODO: store activity into database
-            dataBaseHandler.openWritable();
             if (dataBaseHandler == null) {
                 dataBaseHandler = new DataBaseHandler(this);
             }
+            dataBaseHandler.openWritable();
             int[] confidences = new int[8];
             int i = 0;
             for (DetectedActivity act : result.getProbableActivities()) {

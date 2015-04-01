@@ -49,4 +49,6 @@
     <string name="unknown_activity_request_code">
         Received an unknown activity request code %1$d in onActivityResult.
     </string>
+
+    <string name="location_service_started">Location Service Started</string>
 </resources>
