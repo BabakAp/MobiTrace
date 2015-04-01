@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uf.nomad.mobitrace">
-
+    <!--Permissions-->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -10,7 +10,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <!--********-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,6 +22,14 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <!--Booter-->
+        <receiver android:name=".booter.BootCompletedIntentReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!--Activities-->
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -30,9 +40,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".MyGeoCoderIntentService"
-            android:exported="false" />
 
         <activity
             android:name=".ItemListActivity"
@@ -58,6 +65,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.uf.nomad.mobitrace.MainActivity" />
         </activity>
+
+        <!--Services-->
+        <service
+            android:name=".MyGeoCoderIntentService"
+            android:exported="false" />
 
         <service
             android:name=".activity.MyActivityRecognitionIntentService"
