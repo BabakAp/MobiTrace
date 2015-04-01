@@ -21,13 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/loc"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/getLoc"
-        android:layout_alignEnd="@+id/getLoc"
-        android:layout_marginTop="80dp"
+        android:text="Press Get Location"
+        android:layout_below="@+id/getLoc"
         android:layout_alignLeft="@+id/getLoc"
-        android:layout_alignStart="@+id/getLoc"
-        android:text="Press Get Location" />
+        android:layout_alignStart="@+id/getLoc" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Updates"
-        android:id="@+id/startUpdates"
+        android:id="@+id/startLocationUpdates"
         android:layout_above="@+id/periodicLoc"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -55,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Stop Updates"
-        android:id="@+id/stopUpdates"
+        android:id="@+id/stopLocationUpdates"
         android:layout_above="@+id/periodicLoc"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -69,16 +66,49 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Address"
         android:id="@+id/address"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignLeft="@+id/loc"
+        android:layout_alignStart="@+id/loc"
+        android:layout_alignRight="@+id/getLoc"
+        android:layout_alignEnd="@+id/getLoc"
+        android:layout_above="@+id/addressButton" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Get Last Location Address"
         android:id="@+id/addressButton"
-        android:layout_below="@+id/address"
-        android:layout_centerHorizontal="true"
-        android:onClick="startIntentService"
-        />
+        android:onClick="startMyGeoCoderIntentService"
+        android:layout_above="@+id/startLocationUpdates"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Activity"
+        android:id="@+id/startActivityUpdates"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="startMyActivityRecognitionIntentService" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Activity"
+        android:id="@+id/stopActivityUpdates"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="stopActivityUpdates" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Periodically Updated Activity"
+        android:id="@+id/periodicAct"
+        android:layout_below="@+id/startActivityUpdates"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

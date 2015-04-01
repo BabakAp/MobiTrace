@@ -1,7 +1,6 @@
 package com.uf.nomad.mobitrace;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -24,14 +23,6 @@ import java.util.Locale;
  * helper methods.
  */
 public class MyGeoCoderIntentService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.uf.nomad.mobitrace.action.FOO";
-    private static final String ACTION_BAZ = "com.uf.nomad.mobitrace.action.BAZ";
-
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.uf.nomad.mobitrace.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.uf.nomad.mobitrace.extra.PARAM2";
 
     /**
      * TAG used to identify this class in log messages
@@ -43,36 +34,6 @@ public class MyGeoCoderIntentService extends IntentService {
     public MyGeoCoderIntentService() {
         super("MyGeoCoderIntentService");
     }
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, MyGeoCoderIntentService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
-        Intent intent = new Intent(context, MyGeoCoderIntentService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
 
 
     @Override
@@ -136,7 +97,7 @@ public class MyGeoCoderIntentService extends IntentService {
         }
 
         // Handle case where no address was found.
-        if (addresses == null || addresses.size()  == 0) {
+        if (addresses == null || addresses.size() == 0) {
             if (errorMessage.isEmpty()) {
                 errorMessage = getString(R.string.no_address_found);
                 Log.e(TAG, errorMessage);
@@ -155,31 +116,13 @@ public class MyGeoCoderIntentService extends IntentService {
             // getPostalCode() ("94043", for example)
             // getCountryCode() ("US", for example)
             // getCountryName() ("United States", for example)
-            for(int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+            for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                 addressFragments.add(address.getAddressLine(i));
             }
             Log.i(TAG, getString(R.string.address_found));
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"), addressFragments));
         }
-    }
-
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**

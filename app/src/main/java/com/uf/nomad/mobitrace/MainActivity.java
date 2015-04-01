@@ -1,9 +1,12 @@
 package com.uf.nomad.mobitrace;
 
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,8 +24,12 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.uf.nomad.mobitrace.activity.ActivityUtils;
+import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
 
 import java.text.DateFormat;
@@ -56,6 +63,7 @@ public class MainActivity extends ActionBarActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
+                .addApi(ActivityRecognition.API)
                 .build();
         //If there is a savedInstance, use those values
         updateValuesFromBundle(savedInstanceState);
@@ -90,8 +98,8 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setButtonsEnabledState() {
-        Button button1 = (Button) findViewById(R.id.startUpdates);
-        Button button2 = (Button) findViewById(R.id.stopUpdates);
+        Button button1 = (Button) findViewById(R.id.startLocationUpdates);
+        Button button2 = (Button) findViewById(R.id.stopLocationUpdates);
         if (button2.isEnabled()) {
             button2.setEnabled(false);
             button1.setEnabled(true);
@@ -133,7 +141,7 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+//        mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -141,6 +149,12 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+//        stopLocationUpdates();
+    }
+
+
+    public void stopLocationUpdates(View view) {
+        setButtonsEnabledState();
         stopLocationUpdates();
     }
 
@@ -153,10 +167,6 @@ public class MainActivity extends ActionBarActivity implements
                 mGoogleApiClient, this);
     }
 
-    public void stopLocationUpdates(View view) {
-        setButtonsEnabledState();
-        stopLocationUpdates();
-    }
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -285,7 +295,7 @@ public class MainActivity extends ActionBarActivity implements
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.main_activity:
-                Intent intent = new Intent(this,this.getClass());
+                Intent intent = new Intent(this, this.getClass());
                 startActivity(intent);
                 return true;
             case R.id.item_list:
@@ -329,6 +339,10 @@ public class MainActivity extends ActionBarActivity implements
     String mLastUpdateTime;
     Boolean mRequestingLocationUpdates = false;
 
+
+    Boolean mRequestingActivityUpdates = false;
+    String mLastActivityUpdateTime;
+
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
@@ -345,14 +359,15 @@ public class MainActivity extends ActionBarActivity implements
         if (mLocationRequest == null) {
             createLocationRequest();
 
-            Button button1 = (Button) findViewById(R.id.startUpdates);
-            Button button2 = (Button) findViewById(R.id.stopUpdates);
+            Button button1 = (Button) findViewById(R.id.startLocationUpdates);
+            Button button2 = (Button) findViewById(R.id.stopLocationUpdates);
             button2.setEnabled(false);
             button1.setEnabled(true);
         }
         mRequestingLocationUpdates = true;
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequest, this);
+
     }
 
     @Override
@@ -367,26 +382,78 @@ public class MainActivity extends ActionBarActivity implements
         periodicLoc.setText("Latitude: " + String.valueOf(mCurrentLocation.getLatitude()) +
                 " Longitude: " + String.valueOf(mCurrentLocation.getLongitude()) +
                 " Last Update Time: " + String.valueOf(mLastUpdateTime));
+
+        SharedPreferences mPrefs = getApplicationContext().getSharedPreferences(
+                ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        int last_activity = mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
+        mActivityOutput = getNameFromType(last_activity) + " Conf: " + mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, 0);
+        displayActivityOutput();
     }
 
-    public void startIntentService(View view) {
-        mResultReceiver = new AddressResultReceiver(new Handler());
-        ((TextView)findViewById(R.id.address)).setText("Receiving Address...");
-        startIntentService();
+    public void startMyActivityRecognitionIntentService(View view) {
+        //TODO remove this start location update
+        startLocationUpdates();
+        mActivityResultReceiver = new ActivityResultReceiver(new Handler());
+        ((TextView) findViewById(R.id.periodicAct)).setText("Receiving Activity...");
+        startMyActivityRecognitionIntentService();
     }
+
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
      * fetching an address.
      */
-    protected void startIntentService() {
+    PendingIntent callbackIntent;
+
+    protected void startMyActivityRecognitionIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, MyActivityRecognitionIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        //TODO ADDING ANY EXTRAS MAKES THE ACTIVITY HASRESULT RETURN FALSE! What now??
+//        intent.putExtra(Constants.RECEIVER, mActivityResultReceiver);
+        callbackIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        mRequestingActivityUpdates = true;
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient, Constants.DETECTION_INTERVAL_MILLISECONDS, callbackIntent);
+    }
+
+
+    public void stopActivityUpdates(View view) {
+//        setButtonsEnabledState();
+        stopActivityUpdates();
+    }
+
+    /**
+     * Stops location updates (called in onPause), should not be used if app is going to collect locations in background
+     */
+    protected void stopActivityUpdates() {
+        if (mRequestingActivityUpdates) {
+            mRequestingActivityUpdates = false;
+            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, callbackIntent);
+        }
+    }
+
+    public void startMyGeoCoderIntentService(View view) {
+        mAddressResultReceiver = new AddressResultReceiver(new Handler());
+        ((TextView) findViewById(R.id.address)).setText("Receiving Address...");
+        startMyGeoCoderIntentService();
+    }
+
+    /**
+     * Creates an intent, adds location data to it as an extra, and starts the intent service for
+     * fetching an address.
+     */
+    protected void startMyGeoCoderIntentService() {
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(this, MyGeoCoderIntentService.class);
 
         // Pass the result receiver as an extra to the service.
-        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.RECEIVER, mAddressResultReceiver);
 
         // Pass the location data as an extra to the service.
-        if(mCurrentLocation == null) {
+        if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         }
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
@@ -409,8 +476,16 @@ public class MainActivity extends ActionBarActivity implements
 
         address.setText(mAddressOutput);
     }
-    private AddressResultReceiver mResultReceiver;
+
+    protected void displayActivityOutput() {
+        TextView activity = (TextView) findViewById(R.id.periodicAct);
+
+        activity.setText(mActivityOutput);
+    }
+
+    private AddressResultReceiver mAddressResultReceiver;
     protected String mAddressOutput;
+
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
@@ -423,7 +498,6 @@ public class MainActivity extends ActionBarActivity implements
             // or an error message sent from the intent service.
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             displayAddressOutput();
-
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 showToast(getString(R.string.address_found));
@@ -432,4 +506,49 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
+
+    private ActivityResultReceiver mActivityResultReceiver;
+    protected String mActivityOutput;
+
+    class ActivityResultReceiver extends ResultReceiver {
+        public ActivityResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            displayActivityOutput();
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                showToast(getString(R.string.activity_found));
+            }
+
+        }
+    }
+
+    private String getNameFromType(int activityType) {
+        switch (activityType) {
+            case DetectedActivity.IN_VEHICLE:
+                return "in_vehicle";
+            case DetectedActivity.ON_BICYCLE:
+                return "on_bicycle";
+            case DetectedActivity.ON_FOOT:
+                return "on_foot";
+            case DetectedActivity.STILL:
+                return "still";
+            case DetectedActivity.UNKNOWN:
+                return "unknown";
+            case DetectedActivity.TILTING:
+                return "tilting";
+            case DetectedActivity.WALKING:
+                return "walking";
+            case DetectedActivity.RUNNING:
+                return "running";
+        }
+        return "unknown";
+    }
 }
