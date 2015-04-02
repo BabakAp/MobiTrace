@@ -14,7 +14,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String DATABASE_NAME = "mobitrace.db";
     private static final int DATABASE_VERSION = 1;
 
-
+    //ACTIVITIES TABLE
     public static final String TABLE_ACTIVITIES = "activities";
     public static final String ACT_ID = "act_id";
     public static final String COL_VEHICLE = "in_vehicle";
@@ -26,35 +26,36 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_UNKNOWN = "unknown";
     public static final String COL_WALK = "walking";
 
+    //shared columns
     public static final String COL_SENT = "is_sent"; //THIS COLUMN IS USED ON ALL TABLES
+    public static final String COL_TS ="date_time";
 
-
+    //TRACES TABLE
     public static final String TABLE_TRACES = "traces";
     public static final String TRACE_ID = "trace_id";
-    public static final String COL_TIME = "date_time";
     public static final String COL_LOC_X = "location_x";
     public static final String COL_LOC_Y = "location_y";
     public static final String COL_ACCU = "loc_accuracy";
     public static final String COL_SPD = "speed";
     public static final String COL_STREET = "street_addr";
-    public static final String COL_ACT_ID = "act_id"; //referencing activities.act_id
-    public static final String COL_COMP = "compass";
+    public static final String COL_BEAR = "bearing";
     public static final String COL_ORI_X = "orient_x";
     public static final String COL_ORI_Y = "orient_y";
     public static final String COL_ORI_Z = "orient_z";
-    // IS SENT COLUMN SHARED
 
+    //WIFI AP TABLE
     public static final String TABLE_WIFI = "wifi";
-    public static final String COL_TRACE_ID = "trace_id";
+    public static final String WIFI_ID = "wifi_id";
     public static final String COL_MAC = "mac_addr"; //mac address of the access point
     public static final String COL_SSID = "ssid";
     public static final String COL_STR = "strength";
-    //IS SENT COLUMN SHARED
+    //IS SENT and TS COLUMN SHARED
 
 
     private static final String DATABASE_CREATE_ACTIVITIES =
             "create table " + TABLE_TRACES + " ( " +
                     ACT_ID + " integer primary key, " +
+                    COL_TS + " text unique not null, " +
                     COL_VEHICLE + " integer, " +
                     COL_CYCLE + " integer, " +
                     COL_FOOT + " integer, " +
@@ -69,31 +70,28 @@ public class DataBaseHelper extends SQLiteOpenHelper
     private static final String DATABASE_CREATE_TRACES =
             "create table " + TABLE_ACTIVITIES + " ( " +
                     TRACE_ID + " integer primary key, " +
-                    COL_TIME + " timestamp unique not null, " +
+                    COL_TS + " text unique not null, " +
                     COL_LOC_X + " text, " +
                     COL_LOC_Y + " text, " +
                     COL_ACCU + " float, " +
                     COL_SPD + " float, " +
                     COL_STREET + " text, " +
-                    COL_ACT_ID + " integer, " +
-                    COL_COMP + " text, " +
+                    COL_BEAR + " float, " +
                     COL_ORI_X + " text, " +
                     COL_ORI_Y + " text, " +
                     COL_ORI_Z + " text, " +
-                    COL_SENT + " boolean, " +
-                    "FOREIGN KEY("+COL_ACT_ID+") REFERENCES "+TABLE_ACTIVITIES+"("+ACT_ID+") ON DELETE CASCADE" +
+                    COL_SENT + " boolean " +
                     "); ";
 
 
     private static final String DATABASE_CREATE_WIFI =
             "create table " + TABLE_WIFI + " ( " +
-                    COL_TRACE_ID + " integer, " +
+                    WIFI_ID + " integer primary key, " +
+                    COL_TS + " text unique not null, " +
                     COL_MAC + " text not null, " +
                     COL_SSID + " text, " +
                     COL_STR + " text, " +
-                    COL_SENT + "boolean, " +
-                    "FOREIGN KEY("+COL_TRACE_ID +") REFERENCES "+TABLE_TRACES+"("+TRACE_ID+") ON DELETE CASCADE, " +
-                    "PRIMARY KEY("+COL_TRACE_ID+","+COL_MAC+") " +
+                    COL_SENT + "boolean " +
                     "); ";
 
     public DataBaseHelper(Context context) {

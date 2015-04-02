@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.SQLException;
+import android.location.Location;
+import android.provider.ContactsContract;
 
 /**
  * Created by Roozbeh on 3/30/2015.
@@ -14,8 +16,7 @@ public class DataBaseHandler {
     private SQLiteDatabase database;
     private DataBaseHelper dbHelper;
 
-    public DataBaseHandler(Context context)
-    {
+    public DataBaseHandler(Context context) {
         dbHelper = new DataBaseHelper(context);
     }
 
@@ -32,7 +33,7 @@ public class DataBaseHandler {
     prevents it from being writable. In that case a read only db object is returned.
      */
     public void openReadable() throws SQLException {
-            database = dbHelper.getReadableDatabase();
+        database = dbHelper.getReadableDatabase();
     }
 
     public void close() {
@@ -40,16 +41,32 @@ public class DataBaseHandler {
     }
 
 
-    public boolean insertCompleteTrace()
-    {
+    public boolean insertCompleteTrace() {
         //TODO: add corresponding records to all three tables
         return true;
     }
 
-    //USING ONCONFLICT REPLACE so always return true!
-    public boolean insertActivityRecord(int[] Confidences)
+    public boolean insertLocationTrace(Location loc, String timestamp)
     {
         ContentValues values = new ContentValues();
+        values.put(DataBaseHelper.COL_LOC_X,loc.getLongitude());
+        values.put(DataBaseHelper.COL_LOC_Y,loc.getLatitude());
+        values.put(DataBaseHelper.COL_ACCU,loc.getAccuracy());
+        values.put(DataBaseHelper.COL_SPD,loc.getSpeed());
+        values.put(DataBaseHelper.COL_BEAR,loc.getBearing());
+        values.put(DataBaseHelper.COL_SENT,false);
+
+        //orientation fields are nullified
+        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
+                values,SQLiteDatabase.CONFLICT_REPLACE);
+
+        return (insertId != -1);
+    }
+
+    public boolean insertActivityRecord(int[] Confidences,String timestamp)
+    {
+        ContentValues values = new ContentValues();
+        values.put(DataBaseHelper.COL_TS,timestamp);
         values.put(DataBaseHelper.COL_VEHICLE,Confidences[0]);
         values.put(DataBaseHelper.COL_CYCLE,Confidences[1]);
         values.put(DataBaseHelper.COL_FOOT,Confidences[2]);
@@ -63,7 +80,7 @@ public class DataBaseHandler {
         long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
                 values,SQLiteDatabase.CONFLICT_REPLACE);
 
-        return true;
+        return (insertId != -1);
     }
 
     /*
