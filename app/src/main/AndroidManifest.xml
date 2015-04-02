@@ -26,7 +26,8 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!--Location services switch-->
+        <!-- Location services switch -->
+
 
         <!-- Activities -->
         <activity
@@ -72,6 +73,10 @@
             android:exported="false" />
         <service
             android:name=".LocationUpdateService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".activity.ActivityRecognitionUpdateService"
             android:enabled="true"
             android:exported="false"></service>
     </application>

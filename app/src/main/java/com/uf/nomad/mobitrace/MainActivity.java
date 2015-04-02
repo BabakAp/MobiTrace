@@ -33,12 +33,9 @@ import com.uf.nomad.mobitrace.activity.ActivityUtils;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 
 public class MainActivity extends ActionBarActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -127,9 +124,9 @@ public class MainActivity extends ActionBarActivity implements
         } else {
             GooglePlayServicesUtil.getErrorDialog(code, this, 0);
         }
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+//        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+//            startLocationUpdates();
+//        }
     }
 
     @Override
@@ -154,30 +151,15 @@ public class MainActivity extends ActionBarActivity implements
     }
 
 
-    public void stopLocationUpdates(View view) {
-        setButtonsEnabledState();
-        stopLocationUpdates();
-    }
-
-    /**
-     * Stops location updates (called in onPause), should not be used if app is going to collect locations in background
-     */
-    protected void stopLocationUpdates() {
-        mRequestingLocationUpdates = false;
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
-    }
-
-
     @Override
     public void onConnected(Bundle bundle) {
         TextView mtext = (TextView) findViewById(R.id.loc);
 
         mtext.setText("Connected to API ");
 
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+//        if (mRequestingLocationUpdates) {
+//            startLocationUpdates();
+//        }
 
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
@@ -371,27 +353,48 @@ public class MainActivity extends ActionBarActivity implements
         }
         return false;
     }
-    protected void startLocationUpdates() {
-        if (mLocationRequest == null) {
-            createLocationRequest();
 
-            Button button1 = (Button) findViewById(R.id.startLocationUpdates);
-            Button button2 = (Button) findViewById(R.id.stopLocationUpdates);
-            button2.setEnabled(false);
-            button1.setEnabled(true);
+    public void stopLocationUpdates(View view) {
+        setButtonsEnabledState();
+        if (isMyServiceRunning(LocationUpdateService.class)) {
+            System.out.println("Service running");
+            Context context = getApplicationContext();
+            Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
+            context.stopService(pushIntent1);
         }
-        mRequestingLocationUpdates = true;
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
-
+//        stopLocationUpdates();
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        updateUI();
+    /**
+     * Stops location updates (called in onPause), should not be used if app is going to collect locations in background
+     */
+    protected void stopLocationUpdates() {
+        mRequestingLocationUpdates = false;
+//        LocationServices.FusedLocationApi.removeLocationUpdates(
+//                mGoogleApiClient, this);
     }
+
+//    protected void startLocationUpdates() {
+//        if (mLocationRequest == null) {
+//            createLocationRequest();
+//
+//            Button button1 = (Button) findViewById(R.id.startLocationUpdates);
+//            Button button2 = (Button) findViewById(R.id.stopLocationUpdates);
+//            button2.setEnabled(false);
+//            button1.setEnabled(true);
+//        }
+//        mRequestingLocationUpdates = true;
+//        LocationServices.FusedLocationApi.requestLocationUpdates(
+//                mGoogleApiClient, mLocationRequest, this);
+//
+//    }
+
+//    @Override
+//    public void onLocationChanged(Location location) {
+//        mCurrentLocation = location;
+//        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+//        updateUI();
+//    }
 
     private void updateUI() {
         TextView periodicLoc = (TextView) findViewById(R.id.periodicLoc);
@@ -407,8 +410,6 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void startMyActivityRecognitionIntentService(View view) {
-        //TODO remove this start location update
-        startLocationUpdates();
         mActivityResultReceiver = new ActivityResultReceiver(new Handler());
         ((TextView) findViewById(R.id.periodicAct)).setText("Receiving Activity...");
         startMyActivityRecognitionIntentService();
@@ -437,14 +438,9 @@ public class MainActivity extends ActionBarActivity implements
 
 
     public void stopActivityUpdates(View view) {
-        setButtonsEnabledState();
-        if (isMyServiceRunning(LocationUpdateService.class)) {
-            System.out.println("Service running");
-            Context context = getApplicationContext();
-            Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
-            context.stopService(pushIntent1);
-        }
-//        stopActivityUpdates();
+//        setButtonsEnabledState();
+
+        stopActivityUpdates();
     }
 
     /**
@@ -542,7 +538,7 @@ public class MainActivity extends ActionBarActivity implements
 
             // Display the address string
             // or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            mActivityOutput = resultData.getString(Constants.RESULT_DATA_KEY);
             displayActivityOutput();
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {

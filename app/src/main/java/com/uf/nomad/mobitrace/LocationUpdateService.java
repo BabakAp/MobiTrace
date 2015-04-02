@@ -37,7 +37,7 @@ public class LocationUpdateService extends Service implements
     private GoogleApiClient mGoogleApiClient;
 
     private LocationRequest mLocationRequestHighAccuracy;
-    private LocationRequest mLocationRequestBalancedPowerAccuracy;
+    //    private LocationRequest mLocationRequestBalancedPowerAccuracy;
     private Location mLastLocation;
     private String mLastUpdateTime;
     LocationSettingsRequest.Builder builder;
@@ -75,13 +75,11 @@ public class LocationUpdateService extends Service implements
 
     @Override
     public boolean stopService(Intent intent) {
-        System.out.println("Service stopped");
         return super.stopService(intent);
     }
 
     @Override
     public void onDestroy() {
-        System.out.println("Service destroyed");
         super.onDestroy();
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
@@ -97,10 +95,9 @@ public class LocationUpdateService extends Service implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (mLocationRequestHighAccuracy == null || mLocationRequestBalancedPowerAccuracy == null) {
+        if (mLocationRequestHighAccuracy == null) {
             createLocationRequest();
         }
-        System.out.println("Connected");
 
         builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequestHighAccuracy);
@@ -137,10 +134,10 @@ public class LocationUpdateService extends Service implements
         mLocationRequestHighAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
         mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        mLocationRequestBalancedPowerAccuracy = new LocationRequest();
-        mLocationRequestBalancedPowerAccuracy.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
-        mLocationRequestBalancedPowerAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
-        mLocationRequestBalancedPowerAccuracy.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//        mLocationRequestBalancedPowerAccuracy = new LocationRequest();
+//        mLocationRequestBalancedPowerAccuracy.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
+//        mLocationRequestBalancedPowerAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
+//        mLocationRequestBalancedPowerAccuracy.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
     @Override
@@ -216,19 +213,4 @@ public class LocationUpdateService extends Service implements
         String timeStamp = mDateFormat.format(new Date());
         return timeStamp;
     }
-
-//    private class LocationResponseReceiver extends BroadcastReceiver {
-//        // Prevents instantiation
-//        private LocationResponseReceiver() {
-//        }
-//        // Called when the BroadcastReceiver gets an Intent it's registered to receive
-//
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            /**
-//             * Handle Intents here.
-//             */
-//
-//        }
-//    }
 }

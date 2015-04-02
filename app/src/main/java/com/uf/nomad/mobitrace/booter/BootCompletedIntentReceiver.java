@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.uf.nomad.mobitrace.LocationUpdateService;
+import com.uf.nomad.mobitrace.activity.ActivityRecognitionUpdateService;
 
 /**
  * Created by Babak on 4/1/2015.
@@ -17,8 +18,8 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver {
             Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
             context.startService(pushIntent1);
 
-//            Intent pushIntent2 = new Intent(context,activity class);
-//            context.startService(pushIntent2);
+            Intent pushIntent2 = new Intent(context, ActivityRecognitionUpdateService.class);
+            context.startService(pushIntent2);
         }
         System.out.println("BOOOOTY: " + intent.getAction());
     }
