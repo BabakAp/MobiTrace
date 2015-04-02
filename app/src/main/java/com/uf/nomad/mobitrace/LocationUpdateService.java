@@ -117,8 +117,10 @@ public class LocationUpdateService extends Service implements
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
+                        System.out.println("IN MY ASS");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        System.out.println("OUT OF MY ASS");
                         break;
                 }
             }
