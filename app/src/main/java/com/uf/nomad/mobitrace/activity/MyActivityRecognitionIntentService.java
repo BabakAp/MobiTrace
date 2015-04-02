@@ -24,7 +24,6 @@ import java.util.Date;
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
  * <p/>
- * TODO: Customize class - update intent actions and extra parameters.
  */
 public class MyActivityRecognitionIntentService extends IntentService {
 
@@ -59,16 +58,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
         mPrefs = getApplicationContext().getSharedPreferences(
                 ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-
-        // Get a date formatter, and catch errors in the returned timestamp
-        try {
-            mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
-        } catch (Exception e) {
-            Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
-        }
-        // Format the timestamp according to the pattern, then localize the pattern
-        mDateFormat.applyPattern(DATE_FORMAT_PATTERN);
-        mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
 
         // If the intent contains an update
         if (ActivityRecognitionResult.hasResult(intent)) {

@@ -17,15 +17,10 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
 
-import java.text.SimpleDateFormat;
-
 public class ActivityRecognitionUpdateService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mGoogleApiClient;
-
-    private SimpleDateFormat mDateFormat;
-
     private PendingIntent callbackIntent;
 
 
@@ -69,7 +64,6 @@ public class ActivityRecognitionUpdateService extends Service implements
 
     @Override
     public IBinder onBind(Intent intent) {
-//        throw new UnsupportedOperationException("Not yet implemented");
         return null;
     }
 
@@ -98,9 +92,12 @@ public class ActivityRecognitionUpdateService extends Service implements
         // Create an intent for passing to the intent service responsible for fetching the address.
         Intent intent = new Intent(this, MyActivityRecognitionIntentService.class);
 
-        // Pass the result receiver as an extra to the service.
-        //ADDING ANY EXTRAS MAKES THE ACTIVITY HASRESULT RETURN FALSE! Just store into DB in the intent service class
-//        intent.putExtra(Constants.RECEIVER, mActivityResultReceiver);
+        /**
+         * ADDING ANY EXTRAS MAKES THE ACTIVITY HASRESULT RETURN FALSE!
+         * 1) Just store into DB in the intent service class
+         * 2) Implement broadcast receiver here
+         * Option 1 selected!
+         */
         callbackIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
