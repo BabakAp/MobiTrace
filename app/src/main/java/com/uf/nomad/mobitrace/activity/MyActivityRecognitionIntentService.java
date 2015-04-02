@@ -90,7 +90,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
                 confidences[i] = act.getConfidence();
                 i++;
             }
-            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences);
+            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
             Log.i(TAG, "Activity successfully inserted into DB");
             dataBaseHandler.close();
 
@@ -242,6 +242,23 @@ public class MyActivityRecognitionIntentService extends IntentService {
                             getString(R.string.log_message, activityType, activityName, confidence)
             );
         }
+    }
+
+    private String getTimestamp() {
+        if (mDateFormat == null) {
+            // Get a date formatter, and catch errors in the returned timestamp
+            try {
+                mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
+            } catch (Exception e) {
+                Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
+                return null;
+            }
+            // Format the timestamp according to the pattern, then localize the pattern
+            mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
+            mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
+        }
+        String timeStamp = mDateFormat.format(new Date());
+        return timeStamp;
     }
 
     /**

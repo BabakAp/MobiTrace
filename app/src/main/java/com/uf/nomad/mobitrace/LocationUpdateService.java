@@ -1,34 +1,52 @@
 package com.uf.nomad.mobitrace;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.uf.nomad.mobitrace.activity.ActivityUtils;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LocationUpdateService extends Service implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
+        , LocationListener {
 
     private GoogleApiClient mGoogleApiClient;
 
-    private LocationRequest mLocationRequest;
+    private LocationRequest mLocationRequestHighAccuracy;
+    private LocationRequest mLocationRequestBalancedPowerAccuracy;
     private Location mLastLocation;
+    private String mLastUpdateTime;
+    LocationSettingsRequest.Builder builder;
+
+    private PendingIntent pendingIntent;
+    private SimpleDateFormat mDateFormat;
 
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;
-
-    private NotificationManager mNM;
-    private int NOTIFICATION = R.string.location_service_started;
 
     public LocationUpdateService() {
     }
@@ -37,45 +55,39 @@ public class LocationUpdateService extends Service implements
     public void onCreate() {
         super.onCreate();
 
-        mNM = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification();
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
-                .addApi(ActivityRecognition.API)
                 .build();
-        startLocationUpdates();
+        mGoogleApiClient.connect();
     }
 
-    /**
-     * Starts location updates
-     */
-    private void startLocationUpdates() {
-
-    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("LocationUpdateService", "Received start id " + startId + ": " + intent);
+//        pendingIntent = PendingIntent.getService(getApplicationContext(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;
     }
 
     @Override
+    public boolean stopService(Intent intent) {
+        System.out.println("Service stopped");
+        return super.stopService(intent);
+    }
+
+    @Override
     public void onDestroy() {
+        System.out.println("Service destroyed");
         super.onDestroy();
-        stopLocationUpdates();
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
+        mGoogleApiClient.disconnect();
     }
 
-    //TODO implement this
-    private void stopLocationUpdates() {
-
-    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -85,31 +97,59 @@ public class LocationUpdateService extends Service implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        if (mLocationRequest == null) {
+        if (mLocationRequestHighAccuracy == null || mLocationRequestBalancedPowerAccuracy == null) {
             createLocationRequest();
         }
+        System.out.println("Connected");
 
+        builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequestHighAccuracy);
+//                .addLocationRequest(mLocationRequestBalancedPowerAccuracy);
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                final LocationSettingsStates locationSettingsStates = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        break;
+                }
+            }
+        });
         LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
+                mGoogleApiClient, mLocationRequestHighAccuracy, this);
     }
 
     /**
      * Creates a LocationRequest object using the Constants.LOCATION_INTERVAL_MILLISECONDS interval
      */
     private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
-        mLocationRequest.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequestHighAccuracy = new LocationRequest();
+        mLocationRequestHighAccuracy.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
+        mLocationRequestHighAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
+        mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mLocationRequestBalancedPowerAccuracy = new LocationRequest();
+        mLocationRequestBalancedPowerAccuracy.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
+        mLocationRequestBalancedPowerAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
+        mLocationRequestBalancedPowerAccuracy.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        System.out.println("Connected Suspended");
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+        System.out.println("Connection failed");
         if (!mGoogleApiClient.isConnecting() &&
                 !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
@@ -119,31 +159,61 @@ public class LocationUpdateService extends Service implements
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
+        mLastUpdateTime = getTimestamp();
+
+        if (mLastLocation == null) {
+            Log.e("LocationUpdateService", "Cannot retrieve location");
+        }
         //TODO: Store last received location into database
+        Log.e("LocationUpdateService", "No database selected");
     }
 
     /**
      * Show a notification while this service is running.
      */
     private void showNotification() {
-        //TODO: fix the code here
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-//        CharSequence text = getText(R.string.location_service_started);
-//
-//        // Set the icon, scrolling text and timestamp
-//        Notification notification = new Notification(R.drawable.stat_sample, text,
-//                System.currentTimeMillis());
-//
-//        // The PendingIntent to launch our activity if the user selects this notification
-//        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-//                new Intent(this, LocalServiceActivities.Controller.class), 0);
-//
-//        // Set the info for the views that show in the notification panel.
-//        notification.setLatestEventInfo(this, getText(R.string.local_service_label),
-//                text, contentIntent);
-//
-//        // Send the notification.
-//        mNM.notify(NOTIFICATION, notification);
+        // Set the Intent action to open Location Settings
+        Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+
+        // Create a PendingIntent to start an Activity
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        // Create a notification builder that's compatible with platforms >= version 4
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(getApplicationContext());
+
+        // Set the title, text, and icon
+        builder.setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.turn_on_GPS))
+                .setSmallIcon(R.drawable.ic_notification)
+
+                        // Get the Intent that starts the Location settings panel
+                .setContentIntent(pendingIntent);
+
+        // Get an instance of the Notification Manager
+        NotificationManager notifyManager = (NotificationManager)
+                getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Build the notification and post it
+        notifyManager.notify(0, builder.build());
+    }
+
+    private String getTimestamp() {
+        if (mDateFormat == null) {
+            // Get a date formatter, and catch errors in the returned timestamp
+            try {
+                mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
+            } catch (Exception e) {
+                Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
+                return null;
+            }
+            // Format the timestamp according to the pattern, then localize the pattern
+            mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
+            mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
+        }
+        String timeStamp = mDateFormat.format(new Date());
+        return timeStamp;
     }
 
 //    private class LocationResponseReceiver extends BroadcastReceiver {

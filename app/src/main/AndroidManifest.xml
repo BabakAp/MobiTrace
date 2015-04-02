@@ -24,8 +24,10 @@
         <receiver android:name=".booter.BootCompletedIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action."
             </intent-filter>
         </receiver>
+        <!--Location services switch-->
 
         <!-- Activities -->
         <activity

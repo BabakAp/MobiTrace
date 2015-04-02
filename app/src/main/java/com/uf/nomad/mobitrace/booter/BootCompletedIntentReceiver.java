@@ -20,5 +20,6 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver {
 //            Intent pushIntent2 = new Intent(context,activity class);
 //            context.startService(pushIntent2);
         }
+        System.out.println("BOOOOTY: " + intent.getAction());
     }
 }

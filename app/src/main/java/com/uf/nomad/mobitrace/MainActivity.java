@@ -1,5 +1,6 @@
 package com.uf.nomad.mobitrace;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -352,9 +353,24 @@ public class MainActivity extends ActionBarActivity implements
 
     public void startLocationUpdates(View view) {
         setButtonsEnabledState();
-        startLocationUpdates();
+        if (!isMyServiceRunning(LocationUpdateService.class)) {
+            System.out.println("Service not running");
+            Context context = getApplicationContext();
+            Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
+            context.startService(pushIntent1);
+    }
+//        startLocationUpdates();
     }
 
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
     protected void startLocationUpdates() {
         if (mLocationRequest == null) {
             createLocationRequest();
