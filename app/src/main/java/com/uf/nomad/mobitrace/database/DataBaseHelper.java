@@ -71,8 +71,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
             "create table " + TABLE_ACTIVITIES + " ( " +
                     TRACE_ID + " integer primary key, " +
                     COL_TS + " text unique not null, " +
-                    COL_LOC_X + " text, " +
-                    COL_LOC_Y + " text, " +
+                    COL_LOC_X + " double, " +
+                    COL_LOC_Y + " double, " +
                     COL_ACCU + " float, " +
                     COL_SPD + " float, " +
                     COL_STREET + " text, " +
