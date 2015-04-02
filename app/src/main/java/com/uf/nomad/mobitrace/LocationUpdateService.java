@@ -117,10 +117,9 @@ public class LocationUpdateService extends Service implements
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
-                        System.out.println("IN MY ASS");
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        System.out.println("OUT OF MY ASS");
+                        showNotification();
                         break;
                 }
             }
@@ -189,7 +188,7 @@ public class LocationUpdateService extends Service implements
         builder.setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.turn_on_GPS))
                 .setSmallIcon(R.drawable.ic_notification)
-
+                .setAutoCancel(true)
                         // Get the Intent that starts the Location settings panel
                 .setContentIntent(pendingIntent);
 

@@ -437,8 +437,14 @@ public class MainActivity extends ActionBarActivity implements
 
 
     public void stopActivityUpdates(View view) {
-//        setButtonsEnabledState();
-        stopActivityUpdates();
+        setButtonsEnabledState();
+        if (isMyServiceRunning(LocationUpdateService.class)) {
+            System.out.println("Service running");
+            Context context = getApplicationContext();
+            Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
+            context.stopService(pushIntent1);
+        }
+//        stopActivityUpdates();
     }
 
     /**
