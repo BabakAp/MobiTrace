@@ -244,6 +244,9 @@ public class MyActivityRecognitionIntentService extends IntentService {
         }
     }
 
+    /**
+     * @return timestamp string with format yyyy-MM-dd HH:mm:ss.SSSZ
+     */
     private String getTimestamp() {
         if (mDateFormat == null) {
             // Get a date formatter, and catch errors in the returned timestamp
@@ -288,5 +291,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
         }
         return "unknown";
     }
+
 
 }

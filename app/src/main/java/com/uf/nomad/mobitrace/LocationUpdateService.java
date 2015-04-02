@@ -98,7 +98,9 @@ public class LocationUpdateService extends Service implements
         if (mLocationRequestHighAccuracy == null) {
             createLocationRequest();
         }
-
+        /**
+         * Notifying user to turn on location services, continue otherwise
+         */
         builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequestHighAccuracy);
 //                .addLocationRequest(mLocationRequestBalancedPowerAccuracy);
@@ -121,6 +123,9 @@ public class LocationUpdateService extends Service implements
                 }
             }
         });
+        /**
+         * Register periodic location request
+         */
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient, mLocationRequestHighAccuracy, this);
     }
@@ -197,6 +202,9 @@ public class LocationUpdateService extends Service implements
         notifyManager.notify(0, builder.build());
     }
 
+    /**
+     * @return timestamp string with format yyyy-MM-dd HH:mm:ss.SSSZ
+     */
     private String getTimestamp() {
         if (mDateFormat == null) {
             // Get a date formatter, and catch errors in the returned timestamp

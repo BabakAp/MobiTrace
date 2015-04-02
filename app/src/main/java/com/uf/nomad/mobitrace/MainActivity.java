@@ -410,15 +410,11 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void startMyActivityRecognitionIntentService(View view) {
-        mActivityResultReceiver = new ActivityResultReceiver(new Handler());
+//        mActivityResultReceiver = new ActivityResultReceiver(new Handler());
         ((TextView) findViewById(R.id.periodicAct)).setText("Receiving Activity...");
         startMyActivityRecognitionIntentService();
     }
 
-    /**
-     * Creates an intent, adds location data to it as an extra, and starts the intent service for
-     * fetching an address.
-     */
     PendingIntent callbackIntent;
 
     protected void startMyActivityRecognitionIntentService() {
@@ -525,28 +521,28 @@ public class MainActivity extends ActionBarActivity implements
     }
 
 
-    private ActivityResultReceiver mActivityResultReceiver;
+    //    private ActivityResultReceiver mActivityResultReceiver;
     protected String mActivityOutput;
 
-    class ActivityResultReceiver extends ResultReceiver {
-        public ActivityResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            mActivityOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            displayActivityOutput();
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                showToast(getString(R.string.activity_found));
-            }
-
-        }
-    }
+//    class ActivityResultReceiver extends ResultReceiver {
+//        public ActivityResultReceiver(Handler handler) {
+//            super(handler);
+//        }
+//
+//        @Override
+//        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//
+//            // Display the address string
+//            // or an error message sent from the intent service.
+//            mActivityOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+//            displayActivityOutput();
+//            // Show a toast message if an address was found.
+//            if (resultCode == Constants.SUCCESS_RESULT) {
+//                showToast(getString(R.string.activity_found));
+//            }
+//
+//        }
+//    }
 
     private String getNameFromType(int activityType) {
         switch (activityType) {

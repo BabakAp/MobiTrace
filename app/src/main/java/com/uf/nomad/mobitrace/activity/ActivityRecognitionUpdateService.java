@@ -14,11 +14,10 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
+import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class ActivityRecognitionUpdateService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -26,6 +25,8 @@ public class ActivityRecognitionUpdateService extends Service implements
     private GoogleApiClient mGoogleApiClient;
 
     private SimpleDateFormat mDateFormat;
+
+    private PendingIntent callbackIntent;
 
 
     public ActivityRecognitionUpdateService() {
@@ -61,8 +62,7 @@ public class ActivityRecognitionUpdateService extends Service implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        LocationServices.FusedLocationApi.removeLocationUpdates(
-//                mGoogleApiClient, this);
+        stopActivityUpdates();
         mGoogleApiClient.disconnect();
     }
 
@@ -76,6 +76,7 @@ public class ActivityRecognitionUpdateService extends Service implements
     @Override
     public void onConnected(Bundle bundle) {
         //TODO request activity here
+        startMyActivityRecognitionIntentService();
     }
 
 
@@ -91,6 +92,26 @@ public class ActivityRecognitionUpdateService extends Service implements
                 !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
+    }
+
+    public void startMyActivityRecognitionIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, MyActivityRecognitionIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        //ADDING ANY EXTRAS MAKES THE ACTIVITY HASRESULT RETURN FALSE! Just store into DB in the intent service class
+//        intent.putExtra(Constants.RECEIVER, mActivityResultReceiver);
+        callbackIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient, Constants.DETECTION_INTERVAL_MILLISECONDS, callbackIntent);
+    }
+
+    /**
+     * Stops location updates
+     */
+    public void stopActivityUpdates() {
+        ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, callbackIntent);
     }
 
     /**
@@ -125,20 +146,4 @@ public class ActivityRecognitionUpdateService extends Service implements
         notifyManager.notify(0, builder.build());
     }
 
-    private String getTimestamp() {
-        if (mDateFormat == null) {
-            // Get a date formatter, and catch errors in the returned timestamp
-            try {
-                mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
-            } catch (Exception e) {
-                Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
-                return null;
-            }
-            // Format the timestamp according to the pattern, then localize the pattern
-            mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
-            mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
-        }
-        String timeStamp = mDateFormat.format(new Date());
-        return timeStamp;
-    }
 }
