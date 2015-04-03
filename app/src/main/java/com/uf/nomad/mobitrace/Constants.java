@@ -28,10 +28,17 @@ public final class Constants {
     /**
      * Location update request frequency
      */
-    public static final int LOCATION_INTERVAL_SECONDS = 30;
+    public static final int LOCATION_INTERVAL_SECONDS = 60;
     public static final int LOCATION_INTERVAL_MILLISECONDS =
             MILLISECONDS_PER_SECOND * LOCATION_INTERVAL_SECONDS;
 
+
+    /**
+     * Wifi scanning interval
+     */
+    public static final int WIFI_INTERVAL_SECONDS = 60;
+    public static final int WIFI_INTERVAL_MILLISECONDS =
+            MILLISECONDS_PER_SECOND * WIFI_INTERVAL_SECONDS;
     /**
      * Custom intent action
      */

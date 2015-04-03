@@ -32,6 +32,7 @@ import com.google.android.gms.location.LocationServices;
 import com.uf.nomad.mobitrace.activity.ActivityUtils;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
+import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -65,6 +66,11 @@ public class MainActivity extends ActionBarActivity implements
                 .build();
         //If there is a savedInstance, use those values
         updateValuesFromBundle(savedInstanceState);
+
+        if (!isMyServiceRunning(WifiScanningService.class)) {
+            Intent pushIntentWIFI = new Intent(getApplicationContext(), WifiScanningService.class);
+            getApplicationContext().startService(pushIntentWIFI);
+        }
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
