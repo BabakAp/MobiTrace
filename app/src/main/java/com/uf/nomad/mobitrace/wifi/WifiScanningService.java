@@ -28,6 +28,7 @@ public class WifiScanningService extends Service {
     private int size;
     private BroadcastReceiver receiver;
 
+    private Intent fromMyWifiBroadcastReceiver;
 
     public WifiScanningService() {
     }
@@ -69,6 +70,11 @@ public class WifiScanningService extends Service {
                 PendingIntent pintent = PendingIntent.getBroadcast(getApplicationContext(), 0, MyWifiBroadcastReceiverIntent, 0);
                 AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 alarm.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + Constants.WIFI_INTERVAL_MILLISECONDS, pintent);
+
+                /**
+                 * Release the wakelock acquired by MyWifiBroadcastReceiver
+                 */
+                MyWifiBroadcastReceiver.completeWakefulIntent(fromMyWifiBroadcastReceiver);
             }
         };
         registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
@@ -79,6 +85,7 @@ public class WifiScanningService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("WifiScanningService", "Received start id " + startId + ": " + intent);
+        fromMyWifiBroadcastReceiver = intent;
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
         return START_STICKY;

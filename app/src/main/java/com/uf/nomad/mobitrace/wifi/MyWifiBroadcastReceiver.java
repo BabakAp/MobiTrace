@@ -55,6 +55,7 @@ public class MyWifiBroadcastReceiver extends WakefulBroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        context.startService(new Intent(context, WifiScanningService.class));
+        Intent WifiScanningServiceIntent = new Intent(context, WifiScanningService.class);
+        startWakefulService(context, WifiScanningServiceIntent);
     }
 }
