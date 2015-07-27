@@ -1,4 +1,4 @@
-package com.uf.nomad.mobitrace;
+package com.uf.nomad.mobitrace.android_activity;
 
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -14,7 +14,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +34,12 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.uf.nomad.mobitrace.Constants;
+import com.uf.nomad.mobitrace.ItemListActivity;
+import com.uf.nomad.mobitrace.LocationUpdateService;
+import com.uf.nomad.mobitrace.MyGeoCoderIntentService;
+import com.uf.nomad.mobitrace.R;
+import com.uf.nomad.mobitrace.SettingsActivity;
 import com.uf.nomad.mobitrace.activity.ActivityUtils;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
@@ -36,9 +47,12 @@ import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 
 public class MainActivity extends ActionBarActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, FragmentDrawer.FragmentDrawerListener {
 
     private GoogleApiClient mGoogleApiClient;
+
+    private Toolbar mToolbar;
+    private FragmentDrawer drawerFragment;
 
     // Request code to use when launching the resolution activity
     private static final int REQUEST_RESOLVE_ERROR = 1001;
@@ -52,6 +66,24 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * Constructing the toolbar
+         */
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        drawerFragment = (FragmentDrawer)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
+        drawerFragment.setDrawerListener(this);
+
+        // display the first navigation drawer view on app launch
+        displayView(0);
+        /**
+         * Databasehelper
+         */
         DataBaseHelper dbh = new DataBaseHelper(getBaseContext());
         dbh.getReadableDatabase();
 
@@ -224,6 +256,42 @@ public class MainActivity extends ActionBarActivity implements
     /* Called from ErrorDialogFragment when the dialog is dismissed. */
     public void onDialogDismissed() {
         mResolvingError = false;
+    }
+
+    @Override
+    public void onDrawerItemSelected(View view, int position) {
+        displayView(position);
+    }
+
+    private void displayView(int position) {
+        Fragment fragment = null;
+        String title = getString(R.string.app_name);
+        switch (position) {
+            case 0:
+                fragment = new _1Fragment();
+                title = getString(R.string.title_1);
+                break;
+            case 1:
+//                fragment = new _2Fragment();
+//                title = getString(R.string.title_2);
+                break;
+            case 2:
+//                fragment = new _3Fragment();
+//                title = getString(R.string.title_3);
+                break;
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            fragmentTransaction.commit();
+
+            // set the toolbar title
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     /* A fragment to display an error dialog */

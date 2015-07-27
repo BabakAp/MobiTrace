@@ -79,7 +79,8 @@ public class MyActivityRecognitionIntentService extends IntentService {
                 confidences[i] = act.getConfidence();
                 i++;
             }
-            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
+            //TODO: Insert into database or write to file
+//            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
             Log.i(TAG, "Activity successfully inserted into DB");
             dataBaseHandler.close();
 
@@ -222,6 +223,9 @@ public class MyActivityRecognitionIntentService extends IntentService {
             String activityName = getNameFromType(activityType);
 
             // Make a timestamp
+            if (mDateFormat == null) {
+                mDateFormat = new SimpleDateFormat();
+            }
             String timeStamp = mDateFormat.format(new Date());
 
             // Get the current log file or create a new one, then log the activity

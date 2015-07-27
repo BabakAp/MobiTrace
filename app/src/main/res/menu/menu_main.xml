@@ -4,6 +4,15 @@
 
     <item android:id="@+id/main_activity" android:title="Main"
         android:orderInCategory="100" app:showAsAction="never" />
+    <!-- SEARCH ICON-->
+    <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_search_action"
+        app:showAsAction="ifRoom" />
+
+
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/item_list" android:title="List"
