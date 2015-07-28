@@ -52,27 +52,24 @@
     <string name="location_service_started">Location Service Started</string>
 
 
-    <!-- TODO: Update to new material design-->
+    <!-- Update to new material design-->
     <string name="action_search">Search</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
 
-    <string name="nav_item_1">test1</string>
+    <string name="nav_item_home">Nav Item Home</string>
     <string name="nav_item_2">test2</string>
     <string name="nav_item_3">test3</string>
 
     <!-- navigation drawer item labels  -->
     <string-array name="nav_drawer_labels">
-        <item>@string/nav_item_1</item>
+        <item>@string/nav_item_home</item>
         <item>@string/nav_item_2</item>
         <item>@string/nav_item_3</item>
     </string-array>
 
-    <string name="title_1">test1</string>
+    <string name="title_home">Global Info Home</string>
     <string name="title_2">test2</string>
     <string name="title_3">test3</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

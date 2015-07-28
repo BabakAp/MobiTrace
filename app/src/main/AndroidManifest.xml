@@ -27,10 +27,10 @@
         <!-- Booter -->
         <receiver android:name=".booter.BootCompletedIntentReceiver">
             <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <!--Monitor battery levels-->
+        <!-- Monitor battery levels -->
         <receiver android:name=".PowerConnectionBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
@@ -39,7 +39,7 @@
                 <action android:name="android.intent.action.ACTION_BATTERY_OKAY" />
             </intent-filter>
         </receiver>
-        <!---->
+        <!--  -->
         <receiver android:name=".wifi.MyWifiBroadcastReceiver" />
         <!-- Location services switch -->
 
@@ -49,26 +49,10 @@
             android:name=".android_activity.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ItemListActivity"
-            android:label="@string/title_item_list"
-            android:parentActivityName=".android_activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".android_activity.MainActivity" />
-        </activity>
-        <activity
-            android:name=".ItemDetailActivity"
-            android:label="@string/title_item_detail"
-            android:parentActivityName=".ItemListActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.uf.nomad.mobitrace.ItemListActivity" />
         </activity>
         <activity
             android:name=".SettingsActivity"
@@ -97,7 +81,17 @@
         <service
             android:name=".wifi.WifiScanningService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <receiver
+            android:name=".MyLocationServicesTurnedOnBroadcastReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.location.GPS_ENABLED_CHANGE" />
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

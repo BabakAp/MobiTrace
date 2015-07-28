@@ -7,12 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,12 +31,10 @@ import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.uf.nomad.mobitrace.Constants;
-import com.uf.nomad.mobitrace.ItemListActivity;
 import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.MyGeoCoderIntentService;
 import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.SettingsActivity;
-import com.uf.nomad.mobitrace.activity.ActivityUtils;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
@@ -113,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements
             if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         REQUESTING_LOCATION_UPDATES_KEY);
-                setButtonsEnabledState();
+//                setButtonsEnabledState();
             }
 
             // Update the value of mCurrentLocation from the Bundle and update the
@@ -129,19 +123,7 @@ public class MainActivity extends ActionBarActivity implements
                 mLastUpdateTime = savedInstanceState.getString(
                         LAST_UPDATED_TIME_STRING_KEY);
             }
-            updateUI();
-        }
-    }
-
-    private void setButtonsEnabledState() {
-        Button button1 = (Button) findViewById(R.id.startLocationUpdates);
-        Button button2 = (Button) findViewById(R.id.stopLocationUpdates);
-        if (button2.isEnabled()) {
-            button2.setEnabled(false);
-            button1.setEnabled(true);
-        } else if (button1.isEnabled()) {
-            button1.setEnabled(false);
-            button2.setEnabled(true);
+//            updateUI();
         }
     }
 
@@ -191,14 +173,8 @@ public class MainActivity extends ActionBarActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        TextView mtext = (TextView) findViewById(R.id.loc);
-
-        mtext.setText("Connected to API ");
-
-//        if (mRequestingLocationUpdates) {
-//            startLocationUpdates();
-//        }
-
+        TextView mtext = (TextView) findViewById(R.id.global_info);
+        mtext.append("\n Connected to GoogleApiClient...");
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
@@ -208,11 +184,8 @@ public class MainActivity extends ActionBarActivity implements
                         Toast.LENGTH_LONG).show();
                 return;
             }
-
-//            if (mAddressRequested) {
-//                startIntentService();
-//            }
         }
+        getLocClicked(null);
     }
 
     @Override
@@ -268,8 +241,8 @@ public class MainActivity extends ActionBarActivity implements
         String title = getString(R.string.app_name);
         switch (position) {
             case 0:
-                fragment = new _1Fragment();
-                title = getString(R.string.title_1);
+                fragment = new HomeFragment();
+                title = getString(R.string.title_home);
                 break;
             case 1:
 //                fragment = new _2Fragment();
@@ -355,9 +328,6 @@ public class MainActivity extends ActionBarActivity implements
                 Intent intent = new Intent(this, this.getClass());
                 startActivity(intent);
                 return true;
-            case R.id.item_list:
-                ListClicked();
-                return true;
             case R.id.action_settings:
                 openSettings();
                 return true;
@@ -366,25 +336,23 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    public void ListClicked() {
-        Intent intent = new Intent(this, ItemListActivity.class);
-        startActivity(intent);
-    }
-
     public void openSettings() {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
     public void getLocClicked(View view) {
-        TextView mtext = (TextView) findViewById(R.id.loc);
+        TextView mtext = (TextView) findViewById(R.id.global_info);
 
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (mLastLocation == null) {
-            mtext.setText("Cannot get location");
+            mtext.append("\n Err: Cannot get location, turn on location services please...");
         } else {
-            mtext.setText(String.valueOf(mLastLocation.getLatitude() + " , " + String.valueOf(mLastLocation.getLongitude())));
+            mtext.append("\n Last location: " +
+                            String.valueOf(mLastLocation.getLatitude() + " , " + String.valueOf(mLastLocation.getLongitude()))
+                            + "..."
+            );
         }
     }
 
@@ -408,7 +376,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void startLocationUpdates(View view) {
-        setButtonsEnabledState();
+//        setButtonsEnabledState();
         if (!isMyServiceRunning(LocationUpdateService.class)) {
             System.out.println("Service not running");
             Context context = getApplicationContext();
@@ -429,7 +397,7 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void stopLocationUpdates(View view) {
-        setButtonsEnabledState();
+//        setButtonsEnabledState();
         if (isMyServiceRunning(LocationUpdateService.class)) {
             System.out.println("Service running");
             Context context = getApplicationContext();
@@ -470,24 +438,24 @@ public class MainActivity extends ActionBarActivity implements
 //        updateUI();
 //    }
 
-    private void updateUI() {
-        TextView periodicLoc = (TextView) findViewById(R.id.periodicLoc);
-        periodicLoc.setText("Latitude: " + String.valueOf(mCurrentLocation.getLatitude()) +
-                " Longitude: " + String.valueOf(mCurrentLocation.getLongitude()) +
-                " Last Update Time: " + String.valueOf(mLastUpdateTime));
+//    private void updateUI() {
+//        TextView periodicLoc = (TextView) findViewById(R.id.periodicLoc);
+//        periodicLoc.setText("Latitude: " + String.valueOf(mCurrentLocation.getLatitude()) +
+//                " Longitude: " + String.valueOf(mCurrentLocation.getLongitude()) +
+//                " Last Update Time: " + String.valueOf(mLastUpdateTime));
+//
+//        SharedPreferences mPrefs = getApplicationContext().getSharedPreferences(
+//                ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+//        int last_activity = mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
+//        mActivityOutput = getNameFromType(last_activity) + " Conf: " + mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, 0);
+//        displayActivityOutput();
+//    }
 
-        SharedPreferences mPrefs = getApplicationContext().getSharedPreferences(
-                ActivityUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        int last_activity = mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, DetectedActivity.UNKNOWN);
-        mActivityOutput = getNameFromType(last_activity) + " Conf: " + mPrefs.getInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, 0);
-        displayActivityOutput();
-    }
-
-    public void startMyActivityRecognitionIntentService(View view) {
-//        mActivityResultReceiver = new ActivityResultReceiver(new Handler());
-        ((TextView) findViewById(R.id.periodicAct)).setText("Receiving Activity...");
-        startMyActivityRecognitionIntentService();
-    }
+//    public void startMyActivityRecognitionIntentService(View view) {
+////        mActivityResultReceiver = new ActivityResultReceiver(new Handler());
+//        ((TextView) findViewById(R.id.periodicAct)).setText("Receiving Activity...");
+//        startMyActivityRecognitionIntentService();
+//    }
 
     PendingIntent callbackIntent;
 
@@ -523,11 +491,11 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    public void startMyGeoCoderIntentService(View view) {
-        mAddressResultReceiver = new AddressResultReceiver(new Handler());
-        ((TextView) findViewById(R.id.address)).setText("Receiving Address...");
-        startMyGeoCoderIntentService();
-    }
+//    public void startMyGeoCoderIntentService(View view) {
+//        mAddressResultReceiver = new AddressResultReceiver(new Handler());
+//        ((TextView) findViewById(R.id.address)).setText("Receiving Address...");
+//        startMyGeoCoderIntentService();
+//    }
 
     /**
      * Creates an intent, adds location data to it as an extra, and starts the intent service for
@@ -538,7 +506,7 @@ public class MainActivity extends ActionBarActivity implements
         Intent intent = new Intent(this, MyGeoCoderIntentService.class);
 
         // Pass the result receiver as an extra to the service.
-        intent.putExtra(Constants.RECEIVER, mAddressResultReceiver);
+//        intent.putExtra(Constants.RECEIVER, mAddressResultReceiver);
 
         // Pass the location data as an extra to the service.
         if (mCurrentLocation == null) {
@@ -559,40 +527,40 @@ public class MainActivity extends ActionBarActivity implements
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
-    protected void displayAddressOutput() {
-        TextView address = (TextView) findViewById(R.id.address);
+//    protected void displayAddressOutput() {
+//        TextView address = (TextView) findViewById(R.id.address);
+//
+//        address.setText(mAddressOutput);
+//    }
 
-        address.setText(mAddressOutput);
-    }
+//    protected void displayActivityOutput() {
+//        TextView activity = (TextView) findViewById(R.id.periodicAct);
+//
+//        activity.setText(mActivityOutput);
+//    }
 
-    protected void displayActivityOutput() {
-        TextView activity = (TextView) findViewById(R.id.periodicAct);
-
-        activity.setText(mActivityOutput);
-    }
-
-    private AddressResultReceiver mAddressResultReceiver;
-    protected String mAddressOutput;
-
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string
-            // or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            displayAddressOutput();
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                showToast(getString(R.string.address_found));
-            }
-
-        }
-    }
+//    private AddressResultReceiver mAddressResultReceiver;
+//    protected String mAddressOutput;
+//
+//    class AddressResultReceiver extends ResultReceiver {
+//        public AddressResultReceiver(Handler handler) {
+//            super(handler);
+//        }
+//
+//        @Override
+//        protected void onReceiveResult(int resultCode, Bundle resultData) {
+//
+//            // Display the address string
+//            // or an error message sent from the intent service.
+//            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+//            displayAddressOutput();
+//            // Show a toast message if an address was found.
+//            if (resultCode == Constants.SUCCESS_RESULT) {
+//                showToast(getString(R.string.address_found));
+//            }
+//
+//        }
+//    }
 
 
     //    private ActivityResultReceiver mActivityResultReceiver;

@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 import com.uf.nomad.mobitrace.R;
 
 
-public class _1Fragment extends Fragment {
+public class HomeFragment extends Fragment {
 
-    public _1Fragment() {
+    public HomeFragment() {
         // Required empty public constructor
     }
 
@@ -29,7 +29,7 @@ public class _1Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_1, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
 
         // Inflate the layout for this fragment
