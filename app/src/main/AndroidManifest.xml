@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- ******** -->
     <application
@@ -42,6 +43,15 @@
         <!--  -->
         <receiver android:name=".wifi.MyWifiBroadcastReceiver" />
         <!-- Location services switch -->
+        <receiver
+            android:name=".MyLocationServicesTurnedOnBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
 
 
         <!-- Activities -->
@@ -82,15 +92,6 @@
             android:name=".wifi.WifiScanningService"
             android:enabled="true"
             android:exported="false" />
-
-        <receiver
-            android:name=".MyLocationServicesTurnedOnBroadcastReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.location.GPS_ENABLED_CHANGE" />
-                <action android:name="android.location.PROVIDERS_CHANGED" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

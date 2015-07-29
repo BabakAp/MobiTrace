@@ -1,21 +1,16 @@
 package com.uf.nomad.mobitrace.activity;
 
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.uf.nomad.mobitrace.Constants;
-import com.uf.nomad.mobitrace.R;
 
 public class ActivityRecognitionUpdateService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -69,7 +64,6 @@ public class ActivityRecognitionUpdateService extends Service implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        //TODO request activity here
         startMyActivityRecognitionIntentService();
     }
 
@@ -109,38 +103,6 @@ public class ActivityRecognitionUpdateService extends Service implements
      */
     public void stopActivityUpdates() {
         ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(mGoogleApiClient, callbackIntent);
-    }
-
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        //TODO: this notification shows settings, we don't need that for activity, remove or update?
-        // Set the Intent action to open Location Settings
-        Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-
-        // Create a PendingIntent to start an Activity
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Create a notification builder that's compatible with platforms >= version 4
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext());
-
-        // Set the title, text, and icon
-        builder.setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.turn_on_GPS))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setAutoCancel(true)
-                        // Get the Intent that starts the Location settings panel
-                .setContentIntent(pendingIntent);
-
-        // Get an instance of the Notification Manager
-        NotificationManager notifyManager = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Build the notification and post it
-        notifyManager.notify(0, builder.build());
     }
 
 }
