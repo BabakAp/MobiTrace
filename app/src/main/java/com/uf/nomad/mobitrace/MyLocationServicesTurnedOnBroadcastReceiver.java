@@ -1,5 +1,6 @@
 package com.uf.nomad.mobitrace;
 
+import android.app.ActivityManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -28,7 +29,7 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals("android.location.PROVIDERS_CHANGED")) {
-            String text = "";
+            String text;
             ContentResolver contentResolver = context.getContentResolver();
             // Find out what the settings say about which providers are enabled
             int mode = Settings.Secure.getInt(
@@ -53,7 +54,6 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
                     //set to 'off' otherwise
                     location = -1;
                 }
-
                 showNotificationLocation(context);
             } else {
                 /**
@@ -77,6 +77,11 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
                 //Cancel notification
                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancelAll();
+
+                /**
+                 * Start location update requests, if necessary
+                 */
+                startLocationUpdates(context);
             }
             /**
              * Do a toast with relevant info
@@ -90,21 +95,13 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
             }
             //else just log to file
             else {
-                File lastFile = getLatestFilefromDir(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS));
-                try {
-                    BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(lastFile));
-                    bufferedWriter.write("\n" + text);
-                    bufferedWriter.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                logToLastFile(text, context);
             }
         }
     }
 
     /**
-     * @param dir
+     * @param dir input directory
      * @return last modified file in the given directory
      */
     private File getLatestFilefromDir(File dir) {
@@ -125,7 +122,7 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
     /**
      * Show a notification to turn on location services
      *
-     * @param context
+     * @param context in which the notification should be shown
      */
     private void showNotificationLocation(Context context) {
         // Set the Intent action to open Location Settings
@@ -152,5 +149,38 @@ public class MyLocationServicesTurnedOnBroadcastReceiver extends BroadcastReceiv
 
         // Build the notification and post it
         notifyManager.notify(0, builder.build());
+    }
+
+    public void startLocationUpdates(Context context) {
+        if (!isMyServiceRunning(context, LocationUpdateService.class)) {
+            System.out.println("MyLocationServicesTurnedOnBroadcastReceiver starting LocationUpdateService..");
+            logToLastFile("LocationUpdateService not running...", context);
+            Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
+            logToLastFile("LocationUpdateService starting...", context);
+            context.startService(pushIntent1);
+        }
+    }
+
+    private boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void logToLastFile(String text, Context context) {
+        File lastFile = getLatestFilefromDir(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS));
+        if (lastFile != null) {
+            try {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(lastFile));
+                bufferedWriter.write("\n" + text);
+                bufferedWriter.flush();
+            } catch (IOException | NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
