@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -118,6 +119,9 @@ public class MainActivity extends ActionBarActivity implements
         //If there is a savedInstance, use those values
         updateValuesFromBundle(savedInstanceState);
 
+        /**
+         * Start WiFi Scanning Service
+         */
         if (!isMyServiceRunning(WifiScanningService.class)) {
             Intent pushIntentWIFI = new Intent(getApplicationContext(), WifiScanningService.class);
             getApplicationContext().startService(pushIntentWIFI);
@@ -267,6 +271,7 @@ public class MainActivity extends ActionBarActivity implements
         public ErrorDialogFragment() {
         }
 
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Get the error code and retrieve the appropriate dialog
@@ -569,17 +574,13 @@ public class MainActivity extends ActionBarActivity implements
     /* Checks if external storage is available for read and write */
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public File getDocumentStorageDir(Context context, String fileName) {
         // Get the directory for the app's private documents directory.
         File directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        File file = new File(directory.getAbsolutePath() + File.separator + fileName + ".txt");
-        return file;
+        return new File(directory.getAbsolutePath() + File.separator + fileName + ".txt");
     }
 
     public void logInfo(String info) {

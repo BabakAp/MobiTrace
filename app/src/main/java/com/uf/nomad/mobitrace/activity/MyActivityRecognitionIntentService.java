@@ -23,7 +23,7 @@ import java.util.Date;
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p/>
+ * <p>
  */
 public class MyActivityRecognitionIntentService extends IntentService {
 
@@ -41,7 +41,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
 
     private DataBaseHandler dataBaseHandler;
-    private static final String TAG = "fetch-activity-intent-service";
+    private static final String TAG = "activity-intent-service";
 
     public MyActivityRecognitionIntentService() {
         // Set the label for the service's background thread
@@ -65,26 +65,14 @@ public class MyActivityRecognitionIntentService extends IntentService {
             // Get the update
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 
-            // Log the update
-            logActivityRecognitionResult(result);
 
-            //TODO: store activity into database
-            if (dataBaseHandler == null) {
-                dataBaseHandler = new DataBaseHandler(this);
-            }
-            dataBaseHandler.openWritable();
-            int[] confidences = new int[8];
-            int i = 0;
-            for (DetectedActivity act : result.getProbableActivities()) {
-                confidences[i] = act.getConfidence();
-                i++;
-            }
-            //TODO: Insert into database or write to file
+
+            //TODO: store activities into database
+            logActivityRecognitionResult(result);
 //            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
             Log.i(TAG, "Activity successfully inserted into DB");
-            dataBaseHandler.close();
 
-            System.out.println("ACTIVITY " + result.getMostProbableActivity());
+            System.out.println("MOST PROBABLE ACTIVITY :: " + result.getMostProbableActivity());
             // Get the most probable activity from the list of activities in the update
             DetectedActivity mostProbableActivity = result.getMostProbableActivity();
 
@@ -98,58 +86,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
             editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activityType);
             editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, confidence);
             editor.commit();
-
-            // Check to see if the repository contains a previous activity
-//            if (!mPrefs.contains(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE)) {
-//
-//                // This is the first type an activity has been detected. Store the type
-//                Editor editor = mPrefs.edit();
-//                editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activityType);
-//                editor.commit();
-//
-//                // If the repository contains a type
-//            } else if (
-//                // If the current type is "moving"
-//                    isMoving(activityType)
-//
-//                            &&
-//
-//                            // The activity has changed from the previous activity
-//                            activityChanged(activityType)
-//
-//                            // The confidence level for the current activity is > 50%
-//                            && (confidence >= 50)) {
-//
-//                // Notify the user
-//                sendNotification();
-//            }
         }
-    }
-
-    /**
-     * Post a notification to the user. The notification prompts the user to click it to
-     * open the device's GPS settings
-     */
-    private void sendNotification() {
-
-        // Create a notification builder that's compatible with platforms >= version 4
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext());
-
-        // Set the title, text, and icon
-        builder.setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.turn_on_GPS))
-                .setSmallIcon(R.drawable.ic_notification)
-
-                        // Get the Intent that starts the Location settings panel
-                .setContentIntent(getContentIntent());
-
-        // Get an instance of the Notification Manager
-        NotificationManager notifyManager = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Build the notification and post it
-        notifyManager.notify(0, builder.build());
     }
 
     /**
@@ -181,13 +118,8 @@ public class MyActivityRecognitionIntentService extends IntentService {
                 DetectedActivity.UNKNOWN);
 
         // If the previous type isn't the same as the current type, the activity has changed
-        if (previousType != currentType) {
-            return true;
-
-            // Otherwise, it hasn't.
-        } else {
-            return false;
-        }
+        // Otherwise, it hasn't.
+        return previousType != currentType;
     }
 
     /**
@@ -209,7 +141,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
     }
 
     /**
-     * Write the activity recognition update to the log file
+     * Write the activity recognition update to the database
      *
      * @param result The result extracted from the incoming Intent
      */
@@ -228,10 +160,12 @@ public class MyActivityRecognitionIntentService extends IntentService {
             }
             String timeStamp = mDateFormat.format(new Date());
 
-            // Get the current log file or create a new one, then log the activity
-            LogFile.getInstance(getApplicationContext()).log(
-                    timeStamp +
-                            LOG_DELIMITER +
+            /**
+             * Write each activity to database
+             */
+            //TODO: INSERT ACTIVITY RECOGNITION DATA INTO DATABASE HERE
+            Log.d("ActivityRecognition",
+                    timeStamp + LOG_DELIMITER +
                             getString(R.string.log_message, activityType, activityName, confidence)
             );
         }
@@ -253,8 +187,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
             mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
             mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
         }
-        String timeStamp = mDateFormat.format(new Date());
-        return timeStamp;
+        return mDateFormat.format(new Date());
     }
 
     /**
