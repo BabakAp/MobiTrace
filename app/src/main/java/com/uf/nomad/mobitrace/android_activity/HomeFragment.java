@@ -10,7 +10,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
 
 
@@ -31,7 +33,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-
+        TextView mtext = (TextView) rootView.findViewById(R.id.global_info);
+        mtext.setText(this.getArguments().getCharSequence(Constants.HomeFragment_BUNDLEKEY));
         // Inflate the layout for this fragment
         return rootView;
     }

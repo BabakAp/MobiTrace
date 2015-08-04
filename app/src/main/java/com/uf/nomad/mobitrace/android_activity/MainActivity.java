@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -45,12 +46,16 @@ import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -297,11 +302,26 @@ public class MainActivity extends ActionBarActivity implements
         switch (position) {
             case 0:
                 fragment = new HomeFragment();
+                Bundle bundle = new Bundle();
+                String info = "";
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(mLog));
+                    String line = null;
+                    while ((line = br.readLine()) != null) {
+                        info += "\n" + line;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiir");
+                System.out.println(info);
+                bundle.putCharSequence(Constants.HomeFragment_BUNDLEKEY, info);
+                fragment.setArguments(bundle);
                 title = getString(R.string.title_home);
                 break;
             case 1:
-//                fragment = new _2Fragment();
-//                title = getString(R.string.title_2);
+                fragment = new WifiListFragment();
+                title = getString(R.string.title_wifi_list);
                 break;
             case 2:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -585,10 +605,11 @@ public class MainActivity extends ActionBarActivity implements
 
     public void logInfo(String info) {
         try {
-            bufferedWriter.write("\n" + new Timestamp(new Date().getTime()).getTime() + " : " + info);
+            Long timestamp = new Timestamp(new Date().getTime()).getTime();
+            bufferedWriter.write("\n" + timestamp + " : " + info);
             bufferedWriter.flush();
             TextView mtext = (TextView) findViewById(R.id.global_info);
-            mtext.append("\n" + info);
+            mtext.append("\n" + timestamp + " : " + info);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -47,4 +47,19 @@ public final class Constants {
     // Defines the key for the status "extra" in an Intent
     public static final String EXTENDED_DATA_STATUS =
             "com.uf.nomad.mobitrace.STATUS";
+
+    /**
+     * Key for accessing WiFi ScanResult
+     */
+    public static final String LAST_SCANRESULT = "com.uf.nomad.mobitrace.SCANRESULT";
+
+    /**
+     * Default delimiter for logging
+     */
+    public static final String DELIMITER = ";;";
+
+    /**
+     * Key used for HomeFragment bundle
+     */
+    public static final String HomeFragment_BUNDLEKEY = "com.uf.nomad.mobitrace.HomeFragment_BUNDLEKEY";
 }

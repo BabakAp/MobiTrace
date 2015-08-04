@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -50,10 +51,18 @@ public class WifiScanningService extends Service {
                 size = results.size();
 
 
+                /**
+                 * Store the last ScanResult, to be used to populate WiFi list view
+                 */
+                SharedPreferences.Editor editor = getSharedPreferences(Constants.LAST_SCANRESULT, MODE_PRIVATE).edit();
+                //Clear old data
+                editor.clear();
                 //TODO insert data into database
                 for (ScanResult sr : results) {
                     System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
+                    editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);
                 }
+                editor.commit();
 
                 /**
                  * This round of scanning has yielded its results, kill yourself! :)
