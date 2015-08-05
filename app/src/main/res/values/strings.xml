@@ -57,9 +57,9 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
 
-    <string name="nav_item_home">Nav Item Home</string>
+    <string name="nav_item_home">Home</string>
     <string name="nav_item_wifi_list">Last WiFi Scan</string>
-    <string name="nav_item_settings">Nav Item Settings</string>
+    <string name="nav_item_settings">Settings</string>
 
     <!-- navigation drawer item labels  -->
     <string-array name="nav_drawer_labels">
@@ -68,7 +68,7 @@
         <item>@string/nav_item_settings</item>
     </string-array>
 
-    <string name="title_home">Global Info Home</string>
+    <string name="title_home">Home</string>
     <string name="title_wifi_list">Last WiFi Scan</string>
-    <string name="title_settings">Title Settings</string>
+    <string name="title_settings">Settings</string>
 </resources>

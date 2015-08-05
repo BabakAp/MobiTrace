@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -41,7 +42,6 @@ import com.google.android.gms.location.LocationServices;
 import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.R;
-import com.uf.nomad.mobitrace.SettingsActivity;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHelper;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
@@ -49,13 +49,11 @@ import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -176,6 +174,14 @@ public class MainActivity extends ActionBarActivity implements
         } else {
             GooglePlayServicesUtil.getErrorDialog(code, this, 0);
         }
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean location_updates_enabled = sharedPref.getBoolean("pref_key_location_updates", false);
+        if (!location_updates_enabled) {
+            stopLocationUpdates();
+        } else {
+            startLocationUpdates();
+        }
+
     }
 
     @Override
@@ -431,14 +437,13 @@ public class MainActivity extends ActionBarActivity implements
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    public void startLocationUpdates(View view) {
+    public void startLocationUpdates() {
         if (!isMyServiceRunning(LocationUpdateService.class)) {
             System.out.println("Service not running");
             Context context = getApplicationContext();
             Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
             context.startService(pushIntent1);
         }
-//        startLocationUpdates();
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -451,35 +456,14 @@ public class MainActivity extends ActionBarActivity implements
         return false;
     }
 
-    public void stopLocationUpdates(View view) {
-//        setButtonsEnabledState();
+    public void stopLocationUpdates() {
         if (isMyServiceRunning(LocationUpdateService.class)) {
             System.out.println("Service running");
             Context context = getApplicationContext();
             Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
             context.stopService(pushIntent1);
         }
-//        stopLocationUpdates();
     }
-
-    /**
-     * Stops location updates (called in onPause), should not be used if app is going to collect locations in background
-     */
-    protected void stopLocationUpdates() {
-        mRequestingLocationUpdates = false;
-//        LocationServices.FusedLocationApi.removeLocationUpdates(
-//                mGoogleApiClient, this);
-    }
-
-//    protected void startLocationUpdates() {
-//        if (mLocationRequest == null) {
-//            createLocationRequest();
-//        }
-//        mRequestingLocationUpdates = true;
-//        LocationServices.FusedLocationApi.requestLocationUpdates(
-//                mGoogleApiClient, mLocationRequest, this);
-//
-//    }
 
 //    @Override
 //    public void onLocationChanged(Location location) {
