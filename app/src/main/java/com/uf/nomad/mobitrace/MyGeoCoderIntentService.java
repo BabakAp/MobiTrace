@@ -27,7 +27,7 @@ public class MyGeoCoderIntentService extends IntentService {
     /**
      * TAG used to identify this class in log messages
      */
-    private static final String TAG = "fetch-address-intent-service";
+    private static final String TAG = "address-intent-service";
 
     protected ResultReceiver mReceiver;
 

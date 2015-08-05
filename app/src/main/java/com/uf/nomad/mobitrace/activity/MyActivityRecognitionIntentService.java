@@ -85,7 +85,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
             Editor editor = mPrefs.edit();
             editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_TYPE, activityType);
             editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, confidence);
-            editor.commit();
+            editor.apply();
         }
     }
 

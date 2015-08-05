@@ -62,7 +62,7 @@ public class WifiScanningService extends Service {
                     System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
                     editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);
                 }
-                editor.commit();
+                editor.apply();
 
                 /**
                  * This round of scanning has yielded its results, kill yourself! :)
@@ -114,39 +114,6 @@ public class WifiScanningService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-
-    /**
-     * Show a notification while this service is running.
-     */
-    private void showNotification() {
-        //TODO: this notification shows settings, we don't need that for wifi, remove or update?
-        // Set the Intent action to open Location Settings
-        Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-
-        // Create a PendingIntent to start an Activity
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Create a notification builder that's compatible with platforms >= version 4
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(getApplicationContext());
-
-        // Set the title, text, and icon
-        builder.setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.turn_on_GPS))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setAutoCancel(true)
-                        // Get the Intent that starts the Location settings panel
-                .setContentIntent(pendingIntent);
-
-        // Get an instance of the Notification Manager
-        NotificationManager notifyManager = (NotificationManager)
-                getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Build the notification and post it
-        notifyManager.notify(0, builder.build());
     }
 
 }

@@ -218,7 +218,6 @@ public class LocationUpdateService extends Service implements
             mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
             mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
         }
-        String timeStamp = mDateFormat.format(new Date());
-        return timeStamp;
+        return mDateFormat.format(new Date());
     }
 }

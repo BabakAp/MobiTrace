@@ -219,7 +219,7 @@ public class MainActivity extends ActionBarActivity implements
         /**
          * Retrieve and print last known location
          */
-        getLocClicked(null);
+        getLocClicked();
         /**
          * Start Activity Recognition IntentService
          */
@@ -398,7 +398,7 @@ public class MainActivity extends ActionBarActivity implements
         startActivity(intent);
     }
 
-    public void getLocClicked(View view) {
+    public void getLocClicked() {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
         if (mLastLocation == null) {
@@ -549,7 +549,7 @@ public class MainActivity extends ActionBarActivity implements
             //TODO: Insert activity into database
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                Toast.makeText(getApplicationContext(), getString(R.string.activity_found), Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), getString(R.string.activity_found), Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -600,7 +600,13 @@ public class MainActivity extends ActionBarActivity implements
     public File getDocumentStorageDir(Context context, String fileName) {
         // Get the directory for the app's private documents directory.
         File directory = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        return new File(directory.getAbsolutePath() + File.separator + fileName + ".txt");
+        String absolutePath = null;
+        try {
+            absolutePath = directory.getAbsolutePath();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return absolutePath != null ? new File(absolutePath + File.separator + fileName + ".txt") : null;
     }
 
     public void logInfo(String info) {
