@@ -13,12 +13,9 @@ import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -32,9 +29,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
     // Delimits the timestamp from the log info
     private static final String LOG_DELIMITER = ";;";
-
-    // A date formatter
-    private SimpleDateFormat mDateFormat;
 
     // Store the app's shared preferences repository
     private SharedPreferences mPrefs;
@@ -152,40 +146,15 @@ public class MyActivityRecognitionIntentService extends IntentService {
             int confidence = detectedActivity.getConfidence();
             String activityName = getNameFromType(activityType);
 
-            // Make a timestamp
-            if (mDateFormat == null) {
-                mDateFormat = new SimpleDateFormat();
-            }
-            String timeStamp = mDateFormat.format(new Date());
-
             /**
              * Write each activity to database
              */
             //TODO: INSERT ACTIVITY RECOGNITION DATA INTO DATABASE HERE
             Log.d("ActivityRecognition",
-                    timeStamp + LOG_DELIMITER +
+                    Constants.getTimestamp() + LOG_DELIMITER +
                             getString(R.string.log_message, activityType, activityName, confidence)
             );
         }
-    }
-
-    /**
-     * @return timestamp string with format yyyy-MM-dd HH:mm:ss.SSSZ
-     */
-    private String getTimestamp() {
-        if (mDateFormat == null) {
-            // Get a date formatter, and catch errors in the returned timestamp
-            try {
-                mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
-            } catch (Exception e) {
-                Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
-                return null;
-            }
-            // Format the timestamp according to the pattern, then localize the pattern
-            mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
-            mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
-        }
-        return mDateFormat.format(new Date());
     }
 
     /**

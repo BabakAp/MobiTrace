@@ -58,10 +58,10 @@ public class WifiScanningService extends Service {
                 SharedPreferences.Editor editor = getSharedPreferences(Constants.LAST_SCANRESULT, MODE_PRIVATE).edit();
                 //Clear old data
                 editor.clear();
-                //TODO insert data into database
+                //TODO Test database insert
                 DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
                 for (ScanResult sr : results) {
-
+                    dataBaseHandler.insertWiFiRecord(sr, Constants.getTimestamp());
 //                    System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
                     editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);
                 }

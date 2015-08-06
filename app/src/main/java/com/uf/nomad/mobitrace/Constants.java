@@ -1,5 +1,13 @@
 package com.uf.nomad.mobitrace;
 
+import android.util.Log;
+
+import com.uf.nomad.mobitrace.activity.ActivityUtils;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Babak on 3/30/2015.
  */
@@ -62,4 +70,22 @@ public final class Constants {
      * Key used for HomeFragment bundle
      */
     public static final String HomeFragment_BUNDLEKEY = "com.uf.nomad.mobitrace.HomeFragment_BUNDLEKEY";
+
+    /**
+     * @return timestamp string with format yyyy-MM-dd HH:mm:ss.SSSZ
+     */
+    public static String getTimestamp() {
+        SimpleDateFormat mDateFormat = null;
+        // Get a date formatter, and catch errors in the returned timestamp
+        try {
+            mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
+        } catch (Exception e) {
+            Log.e(ActivityUtils.APPTAG, "Internal error: date formatting exception.");
+            return null;
+        }
+        // Format the timestamp according to the pattern, then localize the pattern
+        mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
+        mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
+        return mDateFormat.format(new Date());
+    }
 }
