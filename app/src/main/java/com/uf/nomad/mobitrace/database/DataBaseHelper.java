@@ -31,7 +31,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_TS ="date_time";
 
     //TRACES TABLE
-    public static final String TABLE_LOCATION = "locations";
+    public static final String TABLE_LOCATIONS = "locations";
     public static final String TRACE_ID = "trace_id";
     public static final String COL_LOC_X = "location_x";
     public static final String COL_LOC_Y = "location_y";
@@ -67,8 +67,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     COL_SENT + " boolean " +
                     "); ";
 
-    private static final String DATABASE_CREATE_TRACES =
-            "create table " + TABLE_LOCATION + " ( " +
+    private static final String DATABASE_CREATE_LOCATIONS =
+            "create table " + TABLE_LOCATIONS + " ( " +
                     TRACE_ID + " integer primary key, " +
                     COL_TS + " text unique not null, " +
                     COL_LOC_X + " double, " +
@@ -100,8 +100,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DATABASE_CREATE_ACTIVITIES);
-        db.execSQL(DATABASE_CREATE_TRACES);
+        db.execSQL(DATABASE_CREATE_LOCATIONS);
         db.execSQL(DATABASE_CREATE_WIFI);
         db.execSQL("PRAGMA foreign_keys = TRUE;");
 
@@ -115,7 +114,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIFI);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVITIES);
         onCreate(db);
     }
