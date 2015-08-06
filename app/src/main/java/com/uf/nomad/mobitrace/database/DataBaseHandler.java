@@ -47,7 +47,7 @@ public class DataBaseHandler {
         return true;
     }
 
-    public boolean insertLocationRecord(Location loc, String timestamp)//MISSING ORIENTATION
+    public boolean insertLocationRecord(Location loc, float[] orientations, String timestamp)//MISSING ORIENTATION
     {
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.COL_TS,timestamp);
@@ -56,6 +56,9 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_ACCU,loc.getAccuracy());
         values.put(DataBaseHelper.COL_SPD,loc.getSpeed());
         values.put(DataBaseHelper.COL_BEAR,loc.getBearing());
+        values.put(DataBaseHelper.COL_ORI_X,orientations[0]);
+        values.put(DataBaseHelper.COL_ORI_Y,orientations[1]);
+        values.put(DataBaseHelper.COL_ORI_Z,orientations[2]);
         values.put(DataBaseHelper.COL_SENT,false);
 
         //orientation fields are nullified
