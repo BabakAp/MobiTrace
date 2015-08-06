@@ -6,6 +6,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 /**
@@ -55,6 +56,9 @@ public class MyWifiBroadcastReceiver extends WakefulBroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+        System.out.println("WIFI BROADCAST RECEIVER");
+        System.out.println(context.toString());
+        System.out.println(intent.getAction());
         Intent WifiScanningServiceIntent = new Intent(context, WifiScanningService.class);
         startWakefulService(context, WifiScanningServiceIntent);
     }

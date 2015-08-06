@@ -41,7 +41,8 @@
             </intent-filter>
         </receiver>
         <!--  -->
-        <receiver android:name=".wifi.MyWifiBroadcastReceiver" />
+        <receiver android:name=".wifi.MyWifiBroadcastReceiver">
+        </receiver>
         <!-- Location services switch -->
         <receiver
             android:name=".MyLocationServicesTurnedOnBroadcastReceiver"

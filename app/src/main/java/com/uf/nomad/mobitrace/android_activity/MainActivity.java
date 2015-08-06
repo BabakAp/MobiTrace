@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.hardware.SensorManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -43,7 +44,6 @@ import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
-import com.uf.nomad.mobitrace.database.DataBaseHelper;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 import java.io.BufferedReader;
@@ -101,11 +101,6 @@ public class MainActivity extends ActionBarActivity implements
 
         // display the first navigation drawer view on app launch
         displayView(0);
-        /**
-         * Databasehelper
-         */
-        DataBaseHelper dbh = new DataBaseHelper(getBaseContext());
-        dbh.getReadableDatabase();
 
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
@@ -319,8 +314,6 @@ public class MainActivity extends ActionBarActivity implements
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println("kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiir");
-                System.out.println(info);
                 bundle.putCharSequence(Constants.HomeFragment_BUNDLEKEY, info);
                 fragment.setArguments(bundle);
                 title = getString(R.string.title_home);

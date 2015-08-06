@@ -68,7 +68,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
 
             logActivityRecognitionResult(result);
-//            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
             Log.i(TAG, "Activity successfully inserted into DB");
 
             System.out.println("MOST PROBABLE ACTIVITY :: " + result.getMostProbableActivity());
