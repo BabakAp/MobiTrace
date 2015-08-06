@@ -530,7 +530,6 @@ public class MainActivity extends ActionBarActivity implements
             // Display the address string
             // or an error message sent from the intent service.
             mActivityOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            //TODO: Insert activity into database
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                 Toast.makeText(getApplicationContext(), getString(R.string.activity_found), Toast.LENGTH_SHORT).show();

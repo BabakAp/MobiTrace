@@ -67,7 +67,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
 
 
-            //TODO: store activities into database
             logActivityRecognitionResult(result);
 //            Boolean insertedIntoDB = dataBaseHandler.insertActivityRecord(confidences, getTimestamp());
             Log.i(TAG, "Activity successfully inserted into DB");
