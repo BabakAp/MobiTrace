@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.R;
+import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 import java.util.Calendar;
 import java.util.List;
@@ -58,8 +59,10 @@ public class WifiScanningService extends Service {
                 //Clear old data
                 editor.clear();
                 //TODO insert data into database
+                DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
                 for (ScanResult sr : results) {
-                    System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
+
+//                    System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
                     editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);
                 }
                 editor.apply();

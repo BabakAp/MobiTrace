@@ -14,6 +14,7 @@ public class BootCompletedIntentReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+            System.err.println("BOOT COMPLETED");
             //TODO: BackgroundService.class should be implemented
             Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
             context.startService(pushIntent1);
