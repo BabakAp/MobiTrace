@@ -62,7 +62,7 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_SENT,false);
 
         //orientation fields are nullified
-        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_LOCATION, null,
+        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_LOCATIONS, null,
                 values,SQLiteDatabase.CONFLICT_REPLACE);
 
         return (insertId != -1);
