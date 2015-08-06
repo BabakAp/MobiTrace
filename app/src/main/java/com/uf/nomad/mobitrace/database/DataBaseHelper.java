@@ -12,7 +12,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "mobitrace.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     //ACTIVITIES TABLE
     public static final String TABLE_ACTIVITIES = "activities";
@@ -31,13 +31,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_TS ="date_time";
 
     //TRACES TABLE
-    public static final String TABLE_TRACES = "traces";
+    public static final String TABLE_LOCATION = "locations";
     public static final String TRACE_ID = "trace_id";
     public static final String COL_LOC_X = "location_x";
     public static final String COL_LOC_Y = "location_y";
     public static final String COL_ACCU = "loc_accuracy";
     public static final String COL_SPD = "speed";
-    public static final String COL_STREET = "street_addr";
     public static final String COL_BEAR = "bearing";
     public static final String COL_ORI_X = "orient_x";
     public static final String COL_ORI_Y = "orient_y";
@@ -49,11 +48,12 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_MAC = "mac_addr"; //mac address of the access point
     public static final String COL_SSID = "ssid";
     public static final String COL_STR = "strength";
+    public static final String COL_FREQ = "frequency";
     //IS SENT and TS COLUMN SHARED
 
 
     private static final String DATABASE_CREATE_ACTIVITIES =
-            "create table " + TABLE_TRACES + " ( " +
+            "create table " + TABLE_ACTIVITIES + " ( " +
                     ACT_ID + " integer primary key, " +
                     COL_TS + " text unique not null, " +
                     COL_VEHICLE + " integer, " +
@@ -68,14 +68,13 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     "); ";
 
     private static final String DATABASE_CREATE_TRACES =
-            "create table " + TABLE_ACTIVITIES + " ( " +
+            "create table " + TABLE_LOCATION + " ( " +
                     TRACE_ID + " integer primary key, " +
                     COL_TS + " text unique not null, " +
                     COL_LOC_X + " double, " +
                     COL_LOC_Y + " double, " +
                     COL_ACCU + " float, " +
                     COL_SPD + " float, " +
-                    COL_STREET + " text, " +
                     COL_BEAR + " float, " +
                     COL_ORI_X + " text, " +
                     COL_ORI_Y + " text, " +
@@ -90,7 +89,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     COL_TS + " text unique not null, " +
                     COL_MAC + " text not null, " +
                     COL_SSID + " text, " +
-                    COL_STR + " text, " +
+                    COL_STR + " integer, " +
+                    COL_FREQ + " integer, " +
                     COL_SENT + "boolean " +
                     "); ";
 
@@ -115,7 +115,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_WIFI);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TRACES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOCATION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACTIVITIES);
         onCreate(db);
     }

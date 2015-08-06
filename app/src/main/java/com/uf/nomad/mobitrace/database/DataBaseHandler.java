@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.SQLException;
 import android.location.Location;
 import android.provider.ContactsContract;
+import android.net.wifi.ScanResult;
 
 /**
  * Created by Roozbeh on 3/30/2015.
@@ -46,9 +47,10 @@ public class DataBaseHandler {
         return true;
     }
 
-    public boolean insertLocationTrace(Location loc, String timestamp)
+    public boolean insertLocationRecord(Location loc, String timestamp)//MISSING ORIENTATION
     {
         ContentValues values = new ContentValues();
+        values.put(DataBaseHelper.COL_TS,timestamp);
         values.put(DataBaseHelper.COL_LOC_X,loc.getLongitude());
         values.put(DataBaseHelper.COL_LOC_Y,loc.getLatitude());
         values.put(DataBaseHelper.COL_ACCU,loc.getAccuracy());
@@ -57,7 +59,7 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_SENT,false);
 
         //orientation fields are nullified
-        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
+        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_LOCATION, null,
                 values,SQLiteDatabase.CONFLICT_REPLACE);
 
         return (insertId != -1);
@@ -77,6 +79,23 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_WALK,Confidences[7]);
         values.put(DataBaseHelper.COL_SENT,false);
 
+        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
+                values,SQLiteDatabase.CONFLICT_REPLACE);
+
+        return (insertId != -1);
+    }
+
+    public boolean insertWiFiRecord(ScanResult wifi, String timestamp)
+    {
+        ContentValues values = new ContentValues();
+        values.put(DataBaseHelper.COL_TS,timestamp);
+        values.put(DataBaseHelper.COL_MAC,wifi.BSSID);
+        values.put(DataBaseHelper.COL_SSID,wifi.SSID);
+        values.put(DataBaseHelper.COL_STR,wifi.level);
+        values.put(DataBaseHelper.COL_FREQ,wifi.frequency);
+        values.put(DataBaseHelper.COL_SENT,false);
+
+        //orientation fields are nullified
         long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
                 values,SQLiteDatabase.CONFLICT_REPLACE);
 
