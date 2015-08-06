@@ -32,7 +32,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     //TRACES TABLE
     public static final String TABLE_LOCATIONS = "locations";
-    public static final String TRACE_ID = "trace_id";
+    public static final String LOCATION_ID = "location_id";
     public static final String COL_LOC_X = "location_x";
     public static final String COL_LOC_Y = "location_y";
     public static final String COL_ACCU = "loc_accuracy";
@@ -69,7 +69,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     private static final String DATABASE_CREATE_LOCATIONS =
             "create table " + TABLE_LOCATIONS + " ( " +
-                    TRACE_ID + " integer primary key, " +
+                    LOCATION_ID + " integer primary key, " +
                     COL_TS + " text unique not null, " +
                     COL_LOC_X + " double, " +
                     COL_LOC_Y + " double, " +
