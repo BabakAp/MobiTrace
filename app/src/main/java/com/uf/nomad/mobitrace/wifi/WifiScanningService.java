@@ -1,7 +1,6 @@
 package com.uf.nomad.mobitrace.wifi;
 
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -12,12 +11,9 @@ import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
-import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.uf.nomad.mobitrace.Constants;
-import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 import java.util.Calendar;
@@ -60,11 +56,14 @@ public class WifiScanningService extends Service {
                 editor.clear();
                 //TODO Test database insert
                 DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
+                dataBaseHandler.openWritable();
                 for (ScanResult sr : results) {
+                    System.out.println(sr);
                     dataBaseHandler.insertWiFiRecord(sr, Constants.getTimestamp());
 //                    System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
                     editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);
                 }
+                dataBaseHandler.close();
                 editor.apply();
 
                 /**

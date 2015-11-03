@@ -3,10 +3,9 @@ package com.uf.nomad.mobitrace.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.provider.ContactsContract;
 import android.net.wifi.ScanResult;
 
 /**
@@ -99,7 +98,7 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_SENT,false);
 
         //orientation fields are nullified
-        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
+        long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_WIFI, null,
                 values,SQLiteDatabase.CONFLICT_REPLACE);
 
         return (insertId != -1);
