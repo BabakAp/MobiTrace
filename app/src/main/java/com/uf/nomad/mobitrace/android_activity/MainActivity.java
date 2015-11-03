@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.hardware.SensorManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
@@ -312,7 +311,8 @@ public class MainActivity extends ActionBarActivity implements
                         info += "\n" + line;
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    System.err.println("No log file found");
                 }
                 bundle.putCharSequence(Constants.HomeFragment_BUNDLEKEY, info);
                 fragment.setArguments(bundle);
@@ -562,7 +562,8 @@ public class MainActivity extends ActionBarActivity implements
             try {
                 bufferedWriter = new BufferedWriter(new FileWriter(mLog));
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                System.err.println("Could not create log file");
             }
         }
     }
