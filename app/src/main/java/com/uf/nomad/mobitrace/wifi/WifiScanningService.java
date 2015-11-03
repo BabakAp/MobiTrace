@@ -58,7 +58,6 @@ public class WifiScanningService extends Service {
                 DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
                 dataBaseHandler.openWritable();
                 for (ScanResult sr : results) {
-                    System.out.println(sr);
                     dataBaseHandler.insertWiFiRecord(sr, Constants.getTimestamp());
 //                    System.out.println("WIFI RESULTS: " + sr.SSID + " " + sr.BSSID + " " + sr.capabilities);
                     editor.putString(sr.SSID, sr.BSSID + Constants.DELIMITER + sr.capabilities);

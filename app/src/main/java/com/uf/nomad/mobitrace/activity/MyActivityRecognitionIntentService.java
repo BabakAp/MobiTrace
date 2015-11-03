@@ -1,26 +1,23 @@
 package com.uf.nomad.mobitrace.activity;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.provider.Settings;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 import com.uf.nomad.mobitrace.Constants;
-import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
+ * <p/>
  */
 public class MyActivityRecognitionIntentService extends IntentService {
 
@@ -34,7 +31,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
     private SharedPreferences mPrefs;
 
 
-    private DataBaseHandler dataBaseHandler;
     private static final String TAG = "activity-intent-service";
 
     public MyActivityRecognitionIntentService() {
@@ -58,7 +54,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
 
             // Get the update
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-
 
 
             logActivityRecognitionResult(result);
@@ -139,21 +134,27 @@ public class MyActivityRecognitionIntentService extends IntentService {
      */
     private void logActivityRecognitionResult(ActivityRecognitionResult result) {
         // Get all the probably activities from the updated result
+        int[] confidences = new int[8];
         for (DetectedActivity detectedActivity : result.getProbableActivities()) {
 
             // Get the activity type, confidence level, and human-readable name
             int activityType = detectedActivity.getType();
             int confidence = detectedActivity.getConfidence();
-            String activityName = getNameFromType(activityType);
 
-            /**
-             * Write each activity to database
-             */
-            //TODO: INSERT ACTIVITY RECOGNITION DATA INTO DATABASE HERE
-            Log.d("ActivityRecognition",
-                    Constants.getTimestamp() + LOG_DELIMITER +
-                            getString(R.string.log_message, activityType, activityName, confidence)
-            );
+            //Set the specific activity type's confidence
+            confidences[activityType] = confidence;
+
+            String activityName = getNameFromType(activityType);
+        }
+        /**
+         * Write activity confidences to database
+         */
+        DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
+        dataBaseHandler.openWritable();
+        boolean success = dataBaseHandler.insertActivityRecord(confidences, Constants.getTimestamp());
+        dataBaseHandler.close();
+        if (!success) {
+            Log.d("ActivityRecognition", "INSERTION OF ACTIVITY INTO DATABASE FAILED");
         }
     }
 

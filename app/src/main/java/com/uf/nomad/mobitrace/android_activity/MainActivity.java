@@ -131,7 +131,7 @@ public class MainActivity extends ActionBarActivity implements
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 //TODO: INSERT INTO DATABASE
                 // find which radio button is selected
-                long ts = new Timestamp(new Date().getTime()).getTime();
+                String ts = Constants.getTimestamp();
                 if (checkedId == R.id.walkRadioButton) {
                     Toast.makeText(getApplicationContext(), ts+":WALKING",
                             Toast.LENGTH_SHORT).show();
