@@ -29,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -123,6 +124,38 @@ public class MainActivity extends ActionBarActivity implements
             Intent pushIntentWIFI = new Intent(getApplicationContext(), WifiScanningService.class);
             getApplicationContext().startService(pushIntentWIFI);
         }
+
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.activityRadioGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                //TODO: INSERT INTO DATABASE
+                // find which radio button is selected
+                long ts = new Timestamp(new Date().getTime()).getTime();
+                if (checkedId == R.id.walkRadioButton) {
+                    Toast.makeText(getApplicationContext(), ts+":WALKING",
+                            Toast.LENGTH_SHORT).show();
+                } else if (checkedId == R.id.runRadioButton) {
+                    Toast.makeText(getApplicationContext(), ts+":RUNNING",
+                            Toast.LENGTH_SHORT).show();
+                } else if (checkedId == R.id.driveRadioButton){
+                    Toast.makeText(getApplicationContext(), ts+":DRIVING",
+                            Toast.LENGTH_SHORT).show();
+                } else if (checkedId == R.id.busRadioButton){
+                    Toast.makeText(getApplicationContext(), ts+":ON THE BUS",
+                            Toast.LENGTH_SHORT).show();
+                } else if (checkedId == R.id.bikeRadioButton){
+                    Toast.makeText(getApplicationContext(), ts+":BIKING",
+                            Toast.LENGTH_SHORT).show();
+                }
+                else if (checkedId == R.id.stillRadioButton){
+                    Toast.makeText(getApplicationContext(), ts+":STILL",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -148,6 +181,7 @@ public class MainActivity extends ActionBarActivity implements
                         LAST_UPDATED_TIME_STRING_KEY);
             }
         }
+
     }
 
     @Override
@@ -587,15 +621,15 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void logInfo(String info) {
+        Long timestamp = new Timestamp(new Date().getTime()).getTime();
         try {
-            Long timestamp = new Timestamp(new Date().getTime()).getTime();
             bufferedWriter.write("\n" + timestamp + " : " + info);
             bufferedWriter.flush();
-            TextView mtext = (TextView) findViewById(R.id.global_info);
-            mtext.append("\n" + timestamp + " : " + info);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
+        TextView mtext = (TextView) findViewById(R.id.global_info);
+        mtext.append("\n" + timestamp + " : " + info);
     }
     /**
      * END: Helper methods for logging
