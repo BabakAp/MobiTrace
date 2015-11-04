@@ -28,7 +28,12 @@ public class UploadHandler {
         return gson.toJson(params);
     }
 
-
+    /***
+     *
+     * @param requestURL server url
+     * @param postDataParams : It should be a HashMap with w,l,a as keys each corresponding to an arraylist of database objects (or hashmaps)
+     * @return
+     */
     public String performPostCall(String requestURL, HashMap<String,Object> postDataParams) {
 
         URL url;

@@ -12,7 +12,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 {
 
     private static final String DATABASE_NAME = "mobitrace.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     //ACTIVITIES TABLE
     public static final String TABLE_ACTIVITIES = "activities";
@@ -66,9 +66,9 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     COL_TILT + " integer, " +
                     COL_UNKNOWN + " integer, " +
                     COL_WALK + " integer, " +
-                    COL_SENT + " boolean, " +
                     COL_BUS + " integer, " +
-                    COL_MAN + " boolean " +
+                    COL_MAN + " boolean, " +
+                    COL_SENT + " boolean " +
                     "); ";
 
     private static final String DATABASE_CREATE_LOCATIONS =

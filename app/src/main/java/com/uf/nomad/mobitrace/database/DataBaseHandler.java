@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.net.wifi.ScanResult;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Roozbeh on 3/30/2015.
  */
@@ -107,8 +110,8 @@ public class DataBaseHandler {
     /*
     REMEMBER TO CLOSE THE CURSOR AFTER USE!
      */
-    public Cursor getAllTracesFromStreet() {
-        return database.rawQuery("select * from TRACES",null);
+    public Cursor getAllLocations() {
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_LOCATIONS,null);
 
         /*
         cursor.moveToFirst();
@@ -120,6 +123,36 @@ public class DataBaseHandler {
         // Make sure to close the cursor
        // cursor.close();
 
+    }
+
+    public List<LocationTuple>  getLocationListFromCursor(Cursor c, String dev_id)
+    {
+        List<LocationTuple> locationsList = new ArrayList<LocationTuple>();
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            LocationTuple location = cursorToLocation(c);
+            location.device_id = dev_id;
+            locationsList.add(location);
+            c.moveToNext();
+        }
+        return locationsList;
+    }
+
+    private LocationTuple cursorToLocation(Cursor c) {
+        LocationTuple t = new LocationTuple();
+        //device_id is not assigned
+        t.location_id = c.getInt(0);
+        t.date_time = c.getString(1);
+        t.location_x = c.getDouble(2);
+        t.location_y = c.getDouble(3);
+        t.loc_accuracy = c.getFloat(4);
+        t.speed = c.getFloat(5);
+        t.bearing = c.getFloat(6);
+        t.orient_x = c.getString(7);
+        t.orient_y = c.getString(8);
+        t.orient_z = c.getString(9);
+        t.is_sent =  c.getInt(10);
+        return t;
     }
 }
 
