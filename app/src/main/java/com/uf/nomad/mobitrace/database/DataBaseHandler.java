@@ -107,6 +107,14 @@ public class DataBaseHandler {
         return (insertId != -1);
     }
 
+
+    public void  updateAllNotSendToSend()
+    {
+        database.execSQL("update " + DataBaseHelper.TABLE_LOCATIONS + " set is_sent = 1 where is_sent = 0 ");
+        database.execSQL("update " + DataBaseHelper.TABLE_ACTIVITIES + " set is_sent = 1 where is_sent = 0 ");
+        database.execSQL("update " + DataBaseHelper.TABLE_WIFI + " set is_sent = 1 where is_sent = 0 ");
+    }
+
     /*
     REMEMBER TO CLOSE THE CURSOR AFTER USE!
      */
@@ -119,17 +127,17 @@ public class DataBaseHandler {
 
     public Cursor getAllLocationsNotSent()
     {
-        return database.rawQuery("select * from "+DataBaseHelper.TABLE_LOCATIONS +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_LOCATIONS +" where "+DataBaseHelper.COL_SENT + " = 0",null);
     }
 
     public Cursor getAllWiFiNotSent()
     {
-        return database.rawQuery("select * from "+DataBaseHelper.TABLE_WIFI +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_WIFI +" where "+DataBaseHelper.COL_SENT + " = 0",null);
     }
 
     public Cursor getAllActivityNotSent()
     {
-        return database.rawQuery("select * from "+DataBaseHelper.TABLE_ACTIVITIES +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_ACTIVITIES +" where "+DataBaseHelper.COL_SENT + " = 0",null);
     }
 
     public List<ActivityTuple> getActListFromCursor(Cursor c, String dev_id)
