@@ -112,17 +112,50 @@ public class DataBaseHandler {
      */
     public Cursor getAllLocations() {
         return database.rawQuery("select * from "+DataBaseHelper.TABLE_LOCATIONS,null);
-
-        /*
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-
-            cursor.moveToNext();
-        }
-        */
         // Make sure to close the cursor
        // cursor.close();
 
+    }
+
+    public Cursor getAllLocationsNotSent()
+    {
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_LOCATIONS +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+    }
+
+    public Cursor getAllWiFiNotSent()
+    {
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_WIFI +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+    }
+
+    public Cursor getAllActivityNotSent()
+    {
+        return database.rawQuery("select * from "+DataBaseHelper.TABLE_ACTIVITIES +" where "+DataBaseHelper.COL_SENT + " == 0",null);
+    }
+
+    public List<ActivityTuple> getActListFromCursor(Cursor c, String dev_id)
+    {
+        List<ActivityTuple> actList = new ArrayList<ActivityTuple>();
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            ActivityTuple act = cursorToActivity(c);
+            act.device_id = dev_id;
+            actList.add(act);
+            c.moveToNext();
+        }
+        return actList;
+    }
+
+    public List<WiFiTuple> getWiFiListFromCursor(Cursor c, String dev_id)
+    {
+        List<WiFiTuple> wifiList = new ArrayList<WiFiTuple>();
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            WiFiTuple wifi = cursorToWiFi(c);
+            wifi.device_id = dev_id;
+            wifiList.add(wifi);
+            c.moveToNext();
+        }
+        return wifiList;
     }
 
     public List<LocationTuple>  getLocationListFromCursor(Cursor c, String dev_id)
@@ -136,6 +169,39 @@ public class DataBaseHandler {
             c.moveToNext();
         }
         return locationsList;
+    }
+
+    private ActivityTuple cursorToActivity(Cursor c) {
+        ActivityTuple t = new ActivityTuple();
+        //device_id is not assigned
+        t.act_id = c.getInt(0);
+        t.date_time = c.getString(1);
+        t.in_vehicle = c.getInt(2);
+        t.on_bicycle = c.getInt(3);
+        t.on_foot = c.getInt(4);
+        t.running = c.getInt(5);
+        t.still = c.getInt(6);
+        t.tilting = c.getInt(7);
+        t.unknown = c.getInt(8);
+        t.walking = c.getInt(9);
+        t.in_bus = c.getInt(10);
+        t.is_manual = c.getInt(11);
+        t.is_sent = c.getInt(12);
+        return t;
+
+    }
+
+    private WiFiTuple cursorToWiFi(Cursor c) {
+        WiFiTuple t = new WiFiTuple();
+        //device_id is not assigned
+        t.wifi_id= c.getInt(0);
+        t.date_time = c.getString(1);
+        t.mac_addr = c.getString(2);
+        t.ssid = c.getString(3);
+        t.strength = c.getInt(4);
+        t.frequency = c.getInt(5);
+        t.is_sent = c.getInt(6);
+        return t;
     }
 
     private LocationTuple cursorToLocation(Cursor c) {
@@ -155,37 +221,3 @@ public class DataBaseHandler {
         return t;
     }
 }
-
-
-/*
-SAMPLES
-------------------------
-
-  public List<Program> getAllPrograms() {
-	    List<Program> Programs = new ArrayList<Program>();
-
-	    Cursor cursor = database.query(MySQLiteHelper.TABLE_Programs,
-	        allColumns_programs, null, null, null, null, null);
-
-	    cursor.moveToFirst();
-	    while (!cursor.isAfterLast()) {
-	      Program Program = cursorToProgram(cursor);
-	      Programs.add(Program);
-	      cursor.moveToNext();
-	    }
-	    // Make sure to close the cursor
-	    cursor.close();
-	    return Programs;
-	  }
-
-  	private Program cursorToProgram(Cursor cursor) {
-  	    Program pr = new Program();
-	    pr.ID = cursor.getLong(0);
-	    pr.Name = cursor.getString(1);
-	    pr.Duration = cursor.getString(2);
-	    pr.DateTime = cursor.getString(3);
-	    pr.Icon = cursor.getString(4);
-	    pr.Type = cursor.getLong(5);
-	    return pr;
-  	}
- */
