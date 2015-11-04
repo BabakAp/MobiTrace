@@ -12,33 +12,24 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class UploadHandler {
 
-    private String getPostDataString(HashMap<String, String> params) throws UnsupportedEncodingException
+    private String getPostDataString(HashMap<String,Object> params) throws UnsupportedEncodingException
     {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-        for(Map.Entry<String, String> entry : params.entrySet()){
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-        }
-        return result.toString();
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        return gson.toJson(params);
     }
 
 
-    public String performPostCall(String requestURL, HashMap postDataParams) {
+    public String performPostCall(String requestURL, HashMap<String,Object> postDataParams) {
 
         URL url;
         String response = "";

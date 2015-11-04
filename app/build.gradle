@@ -29,4 +29,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
     compile 'com.android.support:support-v4:22.0.0'
     compile 'com.android.support:recyclerview-v7:21.0.+'
+    compile files('libs/gson-2.4.jar')
+    compile files('libs/gson-2.4-javadoc.jar')
 }

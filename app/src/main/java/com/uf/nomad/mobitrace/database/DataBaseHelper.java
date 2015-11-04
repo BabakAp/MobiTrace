@@ -25,6 +25,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
     public static final String COL_TILT = "tilting";
     public static final String COL_UNKNOWN = "unknown";
     public static final String COL_WALK = "walking";
+    public static final String COL_BUS = "in_bus";
     public static final String COL_MAN = "is_manual";
 
     //shared columns
@@ -65,7 +66,8 @@ public class DataBaseHelper extends SQLiteOpenHelper
                     COL_TILT + " integer, " +
                     COL_UNKNOWN + " integer, " +
                     COL_WALK + " integer, " +
-                    COL_SENT + " boolean " +
+                    COL_SENT + " boolean, " +
+                    COL_BUS + " integer, " +
                     COL_MAN + " boolean " +
                     "); ";
 
