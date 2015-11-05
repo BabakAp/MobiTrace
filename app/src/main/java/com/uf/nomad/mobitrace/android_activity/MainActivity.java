@@ -46,6 +46,7 @@ import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
+import com.uf.nomad.mobitrace.uploader.UploadAsyncTask;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 import java.io.BufferedReader;
@@ -54,6 +55,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -433,6 +436,18 @@ public class MainActivity extends ActionBarActivity implements
                 return true;
             case R.id.action_settings:
                 openSettings();
+                return true;
+            case R.id.action_upload:
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.upload_attempting), Toast.LENGTH_SHORT).show();
+                try {
+                    new UploadAsyncTask(getApplicationContext()).execute(new URL(getString(R.string.serverURL)));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                    Log.e("MainActivity", "UPLOAD FAILED DUE TO MALFORMEDURLEXCEPTION");
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.upload_failed), Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

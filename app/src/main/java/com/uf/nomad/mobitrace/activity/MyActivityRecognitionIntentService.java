@@ -59,7 +59,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
             logActivityRecognitionResult(result);
             Log.i(TAG, "Activity successfully inserted into DB");
 
-            System.out.println("MOST PROBABLE ACTIVITY :: " + result.getMostProbableActivity());
+            Log.i(TAG, "MOST PROBABLE ACTIVITY :: " + result.getMostProbableActivity());
             // Get the most probable activity from the list of activities in the update
             DetectedActivity mostProbableActivity = result.getMostProbableActivity();
 
@@ -134,7 +134,7 @@ public class MyActivityRecognitionIntentService extends IntentService {
      */
     private void logActivityRecognitionResult(ActivityRecognitionResult result) {
         // Get all the probably activities from the updated result
-        int[] confidences = new int[8];
+        int[] confidences = new int[9];
         for (DetectedActivity detectedActivity : result.getProbableActivities()) {
 
             // Get the activity type, confidence level, and human-readable name

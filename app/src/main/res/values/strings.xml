@@ -71,4 +71,11 @@
     <string name="title_home">Home</string>
     <string name="title_wifi_list">Last WiFi Scan</string>
     <string name="title_settings">Settings</string>
+
+    <string name="upload">Upload</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_attempting">Attempting to upload traces</string>
+
+    <!-- SERVER URL-->
+    <string name="serverURL" translatable="false">http://52.0.23.90:45612</string>
 </resources>

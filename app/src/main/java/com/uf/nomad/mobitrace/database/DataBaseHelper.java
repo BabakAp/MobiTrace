@@ -8,11 +8,10 @@ import android.util.Log;
 /**
  * Created by Roozbeh on 3/30/2015.
  */
-public class DataBaseHelper extends SQLiteOpenHelper
-{
+public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "mobitrace.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 9;
 
     //ACTIVITIES TABLE
     public static final String TABLE_ACTIVITIES = "activities";
@@ -30,7 +29,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     //shared columns
     public static final String COL_SENT = "is_sent"; //THIS COLUMN IS USED ON ALL TABLES
-    public static final String COL_TS ="date_time";
+    public static final String COL_TS = "date_time";
 
     //TRACES TABLE
     public static final String TABLE_LOCATIONS = "locations";
@@ -104,6 +103,7 @@ public class DataBaseHelper extends SQLiteOpenHelper
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(DATABASE_CREATE_ACTIVITIES);
         db.execSQL(DATABASE_CREATE_LOCATIONS);
         db.execSQL(DATABASE_CREATE_WIFI);
         db.execSQL("PRAGMA foreign_keys = TRUE;");
