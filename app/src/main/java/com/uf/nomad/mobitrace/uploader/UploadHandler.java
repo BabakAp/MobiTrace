@@ -4,6 +4,9 @@ package com.uf.nomad.mobitrace.uploader;
  * Created by Roozbeh on 8/6/2015.
  */
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -14,32 +17,28 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import javax.net.ssl.HttpsURLConnection;
 
 public class UploadHandler {
 
-    private String getPostDataString(HashMap<String,Object> params) throws UnsupportedEncodingException
-    {
+    private String getPostDataString(HashMap<String, Object> params) throws UnsupportedEncodingException {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         return gson.toJson(params);
     }
 
     /***
-     *
-     * @param requestURL server url
+     * @param requestURL     server url
      * @param postDataParams : It should be a HashMap with w,l,a as keys each corresponding to an arraylist of database objects (or hashmaps)
      * @return
      */
-    public String performPostCall(String requestURL, HashMap<String,Object> postDataParams) {
+    public String performPostCall(URL requestURL, HashMap<String, Object> postDataParams) {
 
         URL url;
         String response = "";
         try {
-            url = new URL(requestURL);
+//            url = new URL(requestURL);
+            url = requestURL;
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
@@ -56,17 +55,16 @@ public class UploadHandler {
             writer.flush();
             writer.close();
             os.close();
-            int responseCode=conn.getResponseCode();
+            int responseCode = conn.getResponseCode();
 
             if (responseCode == HttpsURLConnection.HTTP_OK) {
                 String line;
-                BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                while ((line=br.readLine()) != null) {
-                    response+=line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                while ((line = br.readLine()) != null) {
+                    response += line;
                 }
-            }
-            else {
-                response="";
+            } else {
+                response = "";
 
             }
         } catch (Exception e) {
