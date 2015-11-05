@@ -5,9 +5,11 @@ import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.uf.nomad.mobitrace.Constants;
+import com.uf.nomad.mobitrace.database.DataBaseHandler;
+
 import java.net.URL;
 import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Created by Babak on 11/5/2015.
@@ -23,35 +25,41 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
     protected Long doInBackground(URL... urls) {
         if (urls.length == 0) {
             Log.e("UploadAsyncTask", "NO URL PROVIDED TO UPLOADASYNCTASK...UPLOAD FAILED");
-            return 0l;
+            return -1l;
         } else {
             UploadHandler up = new UploadHandler();
+            //TODO: WHAT DOES THE SERVER RESPOND? WHAT TO DO WITH IT?
             up.performPostCall(urls[0], databasetoHashMap());
-            return 0l;
+            return 1l;
         }
     }
 
     private HashMap<String, Object> databasetoHashMap() {
-        String deviceId = getDevideID(context);
-//        HashMap<String,Obj>
-        return null;
+        String deviceId = getDeviceID(context);
+        HashMap<String, Object> map = new HashMap<>();
+        DataBaseHandler db = new DataBaseHandler(context);
+        map.put("w", db.getWiFiList(deviceId));
+        map.put("l", db.getLocationList(deviceId));
+        map.put("a", db.getActivityList(deviceId));
+        return map;
     }
 
-    private String getDevideID(Context context) {
+    /**
+     * @param context
+     * @return A hash of Telephony Manager DeviceID, SimSerialNumber
+     */
+    private String getDeviceID(Context context) {
         final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         final String tmDevice, tmSerial, androidId;
         tmDevice = "" + tm.getDeviceId();
         tmSerial = "" + tm.getSimSerialNumber();
-        androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        String deviceId = deviceUuid.toString();
+        String deviceId = Constants.SHA256(tmDevice + tmSerial);
         return deviceId;
     }
 
     @Override
     protected void onPostExecute(Long result) {
-
+        Log.d("UploadAsyncTask", "UPLOAD FINISHED");
     }
 }

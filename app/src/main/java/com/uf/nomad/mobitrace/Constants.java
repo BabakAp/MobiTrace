@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.uf.nomad.mobitrace.activity.ActivityUtils;
 
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -87,5 +88,21 @@ public final class Constants {
         mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss.SSSZ");
         mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
         return mDateFormat.format(new Date());
+    }
+
+    /**
+     *
+     * @param source
+     * @return SHA-256 of input string
+     */
+    public static String SHA256(String source) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(source.getBytes("UTF-8"));
+            byte[] digest = md.digest();
+            return String.format("%064x", new java.math.BigInteger(1, digest));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
