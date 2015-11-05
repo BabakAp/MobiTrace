@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
@@ -30,6 +31,10 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
             UploadHandler up = new UploadHandler();
             //TODO: WHAT DOES THE SERVER RESPOND? WHAT TO DO WITH IT?
             up.performPostCall(urls[0], databasetoHashMap());
+            DataBaseHandler db = new DataBaseHandler(context);
+            db.openWritable();
+            db.updateAllNotSendToSend();
+            db.close();
             return 1l;
         }
     }
@@ -38,9 +43,11 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
         String deviceId = getDeviceID(context);
         HashMap<String, Object> map = new HashMap<>();
         DataBaseHandler db = new DataBaseHandler(context);
+        db.openReadable();
         map.put("w", db.getWiFiList(deviceId));
         map.put("l", db.getLocationList(deviceId));
         map.put("a", db.getActivityList(deviceId));
+        db.close();
         return map;
     }
 
@@ -60,6 +67,9 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
 
     @Override
     protected void onPostExecute(Long result) {
-        Log.d("UploadAsyncTask", "UPLOAD FINISHED");
+        String msg = "UPLOAD FINISHED";
+        Log.d("UploadAsyncTask", msg);
+        Toast.makeText(context, msg,
+                Toast.LENGTH_SHORT).show();
     }
 }

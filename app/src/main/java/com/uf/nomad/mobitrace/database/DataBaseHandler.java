@@ -100,7 +100,6 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_FREQ, wifi.frequency);
         values.put(DataBaseHelper.COL_SENT, false);
 
-        //orientation fields are nullified
         long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_WIFI, null,
                 values, SQLiteDatabase.CONFLICT_REPLACE);
 
