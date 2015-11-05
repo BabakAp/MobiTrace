@@ -151,7 +151,8 @@ public class MyActivityRecognitionIntentService extends IntentService {
          */
         DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
         dataBaseHandler.openWritable();
-        boolean success = dataBaseHandler.insertActivityRecord(confidences, Constants.getTimestamp());
+        int is_manual = 0;
+        boolean success = dataBaseHandler.insertActivityRecord(confidences, Constants.getTimestamp(), is_manual);
         dataBaseHandler.close();
         if (!success) {
             Log.d("ActivityRecognition", "INSERTION OF ACTIVITY INTO DATABASE FAILED");

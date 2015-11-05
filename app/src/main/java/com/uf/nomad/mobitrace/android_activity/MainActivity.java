@@ -26,6 +26,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,7 @@ import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.R;
 import com.uf.nomad.mobitrace.activity.MyActivityRecognitionIntentService;
+import com.uf.nomad.mobitrace.database.DataBaseHandler;
 import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 import java.io.BufferedReader;
@@ -129,31 +131,42 @@ public class MainActivity extends ActionBarActivity implements
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                //TODO: INSERT INTO DATABASE
                 // find which radio button is selected
                 String ts = Constants.getTimestamp();
+                DataBaseHandler db = new DataBaseHandler(getApplicationContext());
+                int[] confidences = new int[9];
+                db.openWritable();
                 if (checkedId == R.id.walkRadioButton) {
-                    Toast.makeText(getApplicationContext(), ts+":WALKING",
+                    confidences[7] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":WALKING",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.runRadioButton) {
-                    Toast.makeText(getApplicationContext(), ts+":RUNNING",
+                    confidences[3] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":RUNNING",
                             Toast.LENGTH_SHORT).show();
-                } else if (checkedId == R.id.driveRadioButton){
-                    Toast.makeText(getApplicationContext(), ts+":DRIVING",
+                } else if (checkedId == R.id.driveRadioButton) {
+                    confidences[0] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":DRIVING",
                             Toast.LENGTH_SHORT).show();
-                } else if (checkedId == R.id.busRadioButton){
-                    Toast.makeText(getApplicationContext(), ts+":ON THE BUS",
+                } else if (checkedId == R.id.busRadioButton) {
+                    confidences[8] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":ON THE BUS",
                             Toast.LENGTH_SHORT).show();
-                } else if (checkedId == R.id.bikeRadioButton){
-                    Toast.makeText(getApplicationContext(), ts+":BIKING",
+                } else if (checkedId == R.id.bikeRadioButton) {
+                    confidences[1] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":BIKING",
+                            Toast.LENGTH_SHORT).show();
+                } else if (checkedId == R.id.stillRadioButton) {
+                    confidences[4] = 100;
+                    Toast.makeText(getApplicationContext(), ts + ":STILL",
                             Toast.LENGTH_SHORT).show();
                 }
-                else if (checkedId == R.id.stillRadioButton){
-                    Toast.makeText(getApplicationContext(), ts+":STILL",
-                            Toast.LENGTH_SHORT).show();
+                int is_manual = 1;
+                boolean success = db.insertActivityRecord(confidences, Constants.getTimestamp(), is_manual);
+                db.close();
+                if (!success) {
+                    Log.d("MainActivity", "INSERTION OF ACTIVITY INTO DATABASE FAILED");
                 }
-
-
             }
         });
     }

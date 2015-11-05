@@ -70,7 +70,7 @@ public class DataBaseHandler {
         return (insertId != -1);
     }
 
-    public boolean insertActivityRecord(int[] Confidences,String timestamp)
+    public boolean insertActivityRecord(int[] Confidences,String timestamp, int is_manual)
     {
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.COL_TS,timestamp);
@@ -82,6 +82,8 @@ public class DataBaseHandler {
         values.put(DataBaseHelper.COL_TILT,Confidences[5]);
         values.put(DataBaseHelper.COL_UNKNOWN,Confidences[6]);
         values.put(DataBaseHelper.COL_WALK,Confidences[7]);
+        values.put(DataBaseHelper.COL_BUS,Confidences[8]);
+        values.put(DataBaseHelper.COL_MAN,is_manual);
         values.put(DataBaseHelper.COL_SENT,false);
 
         long insertId = database.insertWithOnConflict(DataBaseHelper.TABLE_ACTIVITIES, null,
