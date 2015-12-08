@@ -30,7 +30,7 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
         } else {
             UploadHandler up = new UploadHandler();
             //TODO: WHAT DOES THE SERVER RESPOND? WHAT TO DO WITH IT?
-            up.performPostCall(urls[0], databasetoHashMap());
+            up.performPostCall(urls[0], databaseToHashMap());
             DataBaseHandler db = new DataBaseHandler(context);
             db.openWritable();
             db.updateAllNotSendToSend();
@@ -39,7 +39,7 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
         }
     }
 
-    private HashMap<String, Object> databasetoHashMap() {
+    private HashMap<String, Object> databaseToHashMap() {
         String deviceId = getDeviceID(context);
         HashMap<String, Object> map = new HashMap<>();
         DataBaseHandler db = new DataBaseHandler(context);

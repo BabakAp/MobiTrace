@@ -253,6 +253,9 @@ public class LocationUpdateService extends Service implements
         return mDateFormat.format(new Date());
     }
 
+    /**
+     * Thanks to http://www.ahotbrew.com/how-to-detect-forward-and-backward-tilt/
+     */
     float[] mGravity;
     float[] mGeomagnetic;
     float orientation[] = new float[3];
