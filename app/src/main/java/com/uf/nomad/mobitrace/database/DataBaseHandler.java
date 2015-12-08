@@ -136,16 +136,15 @@ public class DataBaseHandler {
     }
 
     /**
-     * @param dev_id which is the unique device ID
      * @return a list of activities not yet sent to server
      */
-    public List<ActivityTuple> getActivityList(String dev_id) {
+    public List<ActivityTuple> getActivityList() {
         Cursor c = getAllActivityNotSent();
-        List<ActivityTuple> actList = new ArrayList<ActivityTuple>();
+        List<ActivityTuple> actList = new ArrayList<>();
         c.moveToFirst();
         while (!c.isAfterLast()) {
             ActivityTuple act = cursorToActivity(c);
-            act.device_id = dev_id;
+//            act.device_id = dev_id;
             actList.add(act);
             c.moveToNext();
         }
@@ -153,16 +152,15 @@ public class DataBaseHandler {
     }
 
     /**
-     * @param dev_id which is the unique device ID
      * @return a list of wifi scans not yet sent to server
      */
-    public List<WiFiTuple> getWiFiList(String dev_id) {
+    public List<WiFiTuple> getWiFiList() {
         Cursor c = getAllWiFiNotSent();
-        List<WiFiTuple> wifiList = new ArrayList<WiFiTuple>();
+        List<WiFiTuple> wifiList = new ArrayList<>();
         c.moveToFirst();
         while (!c.isAfterLast()) {
             WiFiTuple wifi = cursorToWiFi(c);
-            wifi.device_id = dev_id;
+//            wifi.device_id = dev_id;
             wifiList.add(wifi);
             c.moveToNext();
         }
@@ -170,16 +168,15 @@ public class DataBaseHandler {
     }
 
     /**
-     * @param dev_id which is the unique device ID
      * @return a list of location updates not yet sent to server
      */
-    public List<LocationTuple> getLocationList(String dev_id) {
+    public List<LocationTuple> getLocationList() {
         Cursor c = getAllLocationsNotSent();
-        List<LocationTuple> locationsList = new ArrayList<LocationTuple>();
+        List<LocationTuple> locationsList = new ArrayList<>();
         c.moveToFirst();
         while (!c.isAfterLast()) {
             LocationTuple location = cursorToLocation(c);
-            location.device_id = dev_id;
+//            location.device_id = dev_id;
             locationsList.add(location);
             c.moveToNext();
         }

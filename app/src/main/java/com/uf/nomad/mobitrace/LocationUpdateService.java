@@ -5,6 +5,10 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -25,6 +29,7 @@ import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.uf.nomad.mobitrace.activity.ActivityUtils;
+import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,7 +37,11 @@ import java.util.Date;
 
 public class LocationUpdateService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
-        , LocationListener {
+        , LocationListener, SensorEventListener {
+
+    private SensorManager mSensorManager;
+    private Sensor accelerometer;
+    private Sensor magnetometer;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -61,8 +70,20 @@ public class LocationUpdateService extends Service implements
                 .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        initListeners();
     }
 
+    public void initListeners()
+    {
+        mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -167,8 +188,19 @@ public class LocationUpdateService extends Service implements
         if (mLastLocation == null) {
             Log.e("LocationUpdateService", "Cannot retrieve location");
         }
-        //TODO: Store last received location into database
-        Log.e("LocationUpdateService", "No database selected");
+        /**
+         * Write activity confidences to database
+         */
+        if (orientation[0] == 0) {
+            Log.e("LocationUpdateService", "Orientation is 0");
+        }
+        DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
+        dataBaseHandler.openWritable();
+        boolean success = dataBaseHandler.insertLocationRecord(mLastLocation,orientation,Constants.getTimestamp());
+        dataBaseHandler.close();
+        if (!success) {
+            Log.e("LocationUpdateService", "INSERTION OF LAST LOCATION INTO DATABASE FAILED");
+        }
     }
 
     /**
@@ -219,5 +251,57 @@ public class LocationUpdateService extends Service implements
             mDateFormat.applyLocalizedPattern(mDateFormat.toLocalizedPattern());
         }
         return mDateFormat.format(new Date());
+    }
+
+    float[] mGravity;
+    float[] mGeomagnetic;
+    float orientation[] = new float[3];
+    /**
+     * Called when sensor values have changed.
+     * <p>See {@link SensorManager SensorManager}
+     * for details on possible sensor types.
+     * <p>See also {@link SensorEvent SensorEvent}.
+     * <p/>
+     * <p><b>NOTE:</b> The application doesn't own the
+     * {@link SensorEvent event}
+     * object passed as a parameter and therefore cannot hold on to it.
+     * The object may be part of an internal pool and may be reused by
+     * the framework.
+     *
+     * @param event the {@link SensorEvent SensorEvent}.
+     */
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = event.values;
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            mGeomagnetic = event.values;
+        }
+
+        if (mGravity != null && mGeomagnetic != null) {
+            float R[] = new float[9];
+            float I[] = new float[9];
+
+            boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+
+            if (success) {
+                SensorManager.getOrientation(R, orientation);
+            }
+        }
+    }
+
+    /**
+     * Called when the accuracy of the registered sensor has changed.
+     * <p/>
+     * <p>See the SENSOR_STATUS_* constants in
+     * {@link SensorManager SensorManager} for details.
+     *
+     * @param sensor
+     * @param accuracy The new accuracy of this sensor, one of
+     *                 {@code SensorManager.SENSOR_STATUS_*}
+     */
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

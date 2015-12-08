@@ -44,9 +44,10 @@ public class UploadAsyncTask extends AsyncTask<URL, Integer, Long> {
         HashMap<String, Object> map = new HashMap<>();
         DataBaseHandler db = new DataBaseHandler(context);
         db.openReadable();
-        map.put("w", db.getWiFiList(deviceId));
-        map.put("l", db.getLocationList(deviceId));
-        map.put("a", db.getActivityList(deviceId));
+        map.put("device_id",deviceId);
+        map.put("w", db.getWiFiList());
+        map.put("l", db.getLocationList());
+        map.put("a", db.getActivityList());
         db.close();
         return map;
     }
