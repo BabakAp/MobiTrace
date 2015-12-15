@@ -6,8 +6,8 @@
     <!-- General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_location_updates">Enable Location Updates</string>
-    <string name="pref_description_location_updates">Periodically logs location data into database</string>
+    <string name="pref_title_services">Enable Services</string>
+    <string name="pref_description_services">Periodically logs data into database</string>
 
     <!--<string name="pref_title_display_name">Display name</string>-->
     <!--<string name="pref_default_display_name">John Smith</string>-->

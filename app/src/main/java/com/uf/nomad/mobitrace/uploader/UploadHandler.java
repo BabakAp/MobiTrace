@@ -27,6 +27,12 @@ public class UploadHandler {
         return gson.toJson(params);
     }
 
+    private String getPostDataStringPerList(Object o) throws UnsupportedEncodingException {
+        GsonBuilder builder = new GsonBuilder();
+        Gson gson = builder.create();
+        return gson.toJson(o);
+    }
+
     /***
      * @param requestURL     server url
      * @param postDataParams : It should be a HashMap with w,l,a as keys each corresponding to an arraylist of database objects (or hashmaps)
@@ -43,6 +49,7 @@ public class UploadHandler {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(15000);
             conn.setConnectTimeout(15000);
+//            conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestMethod("POST");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -50,7 +57,11 @@ public class UploadHandler {
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(
                     new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getPostDataString(postDataParams));
+//            writer.write(getPostDataString(postDataParams));
+            writer.write("device_id=" + getPostDataStringPerList(postDataParams.get("device_id")) + "&");
+            writer.write("w="+getPostDataStringPerList(postDataParams.get("w"))+"&");
+            writer.write("l="+getPostDataStringPerList(postDataParams.get("l"))+"&");
+            writer.write("a="+getPostDataStringPerList(postDataParams.get("a")));
 
             writer.flush();
             writer.close();
