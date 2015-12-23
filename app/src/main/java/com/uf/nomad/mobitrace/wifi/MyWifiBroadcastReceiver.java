@@ -2,21 +2,14 @@ package com.uf.nomad.mobitrace.wifi;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiManager;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
-
-import java.sql.SQLOutput;
-import java.util.List;
 
 /**
  * Created by Babak on 4/3/2015.
  */
 public class MyWifiBroadcastReceiver extends WakefulBroadcastReceiver {
-
-    private WifiManager wifi;
-    private List<ScanResult> results;
-    private int size;
 
 
     /**
@@ -59,7 +52,14 @@ public class MyWifiBroadcastReceiver extends WakefulBroadcastReceiver {
         System.out.println("WIFI BROADCAST RECEIVER");
         System.out.println(context.toString());
         System.out.println(intent.getAction());
-        Intent WifiScanningServiceIntent = new Intent(context, WifiScanningService.class);
-        startWakefulService(context, WifiScanningServiceIntent);
+        SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean isActive =  myPref.getBoolean("pref_key_services", true);
+        /**
+         * Start Wifi scan if services are active in the settings
+         */
+        if (isActive) {
+            Intent WifiScanningServiceIntent = new Intent(context, WifiScanningService.class);
+            startWakefulService(context, WifiScanningServiceIntent);
+        }
     }
 }

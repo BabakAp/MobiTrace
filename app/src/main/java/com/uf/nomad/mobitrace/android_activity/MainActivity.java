@@ -547,8 +547,6 @@ public class MainActivity extends ActionBarActivity implements
         Intent intent = new Intent(this, MyActivityRecognitionIntentService.class);
 
         // Pass the result receiver as an extra to the service.
-        //TODO ADDING ANY EXTRAS MAKES THE ACTIVITY HASRESULT RETURN FALSE! What now??
-//        intent.putExtra(Constants.RECEIVER, mActivityResultReceiver);
         callbackIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
