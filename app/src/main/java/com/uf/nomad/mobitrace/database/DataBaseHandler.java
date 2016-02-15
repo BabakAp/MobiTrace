@@ -73,15 +73,26 @@ public class DataBaseHandler {
     public boolean insertActivityRecord(int[] Confidences, String timestamp, int is_manual) {
         ContentValues values = new ContentValues();
         values.put(DataBaseHelper.COL_TS, timestamp);
+        /**
+         *     public static final int IN_VEHICLE = 0;
+         public static final int ON_BICYCLE = 1;
+         public static final int ON_FOOT = 2;
+         public static final int STILL = 3;
+         public static final int UNKNOWN = 4;
+         public static final int TILTING = 5;
+         //THERE'S NO 6! We use 6 for manual on_bus activity recording
+         public static final int WALKING = 7;
+         public static final int RUNNING = 8;
+         */
         values.put(DataBaseHelper.COL_VEHICLE, Confidences[0]);
         values.put(DataBaseHelper.COL_CYCLE, Confidences[1]);
         values.put(DataBaseHelper.COL_FOOT, Confidences[2]);
-        values.put(DataBaseHelper.COL_RUNNING, Confidences[3]);
-        values.put(DataBaseHelper.COL_STILL, Confidences[4]);
+        values.put(DataBaseHelper.COL_STILL, Confidences[3]);
+        values.put(DataBaseHelper.COL_UNKNOWN, Confidences[4]);
         values.put(DataBaseHelper.COL_TILT, Confidences[5]);
-        values.put(DataBaseHelper.COL_UNKNOWN, Confidences[6]);
         values.put(DataBaseHelper.COL_WALK, Confidences[7]);
-        values.put(DataBaseHelper.COL_BUS, Confidences[8]);
+        values.put(DataBaseHelper.COL_RUNNING, Confidences[8]);
+        values.put(DataBaseHelper.COL_BUS, Confidences[6]);
         values.put(DataBaseHelper.COL_MAN, is_manual);
         values.put(DataBaseHelper.COL_SENT, false);
 

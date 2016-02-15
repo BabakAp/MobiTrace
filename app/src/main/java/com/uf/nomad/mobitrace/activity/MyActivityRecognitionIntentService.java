@@ -138,6 +138,17 @@ public class MyActivityRecognitionIntentService extends IntentService {
         for (DetectedActivity detectedActivity : result.getProbableActivities()) {
 
             // Get the activity type, confidence level, and human-readable name
+            /**
+             *     public static final int IN_VEHICLE = 0;
+             public static final int ON_BICYCLE = 1;
+             public static final int ON_FOOT = 2;
+             public static final int STILL = 3;
+             public static final int UNKNOWN = 4;
+             public static final int TILTING = 5;
+             //THERE'S NO 6! We use 6 for manual on_bus activity recording
+             public static final int WALKING = 7;
+             public static final int RUNNING = 8;
+             */
             int activityType = detectedActivity.getType();
             int confidence = detectedActivity.getConfidence();
 

@@ -131,6 +131,17 @@ public class MainActivity extends ActionBarActivity implements
         }
 
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.activityRadioGroup);
+        /**
+         *     public static final int IN_VEHICLE = 0;
+         public static final int ON_BICYCLE = 1;
+         public static final int ON_FOOT = 2;
+         public static final int STILL = 3;
+         public static final int UNKNOWN = 4;
+         public static final int TILTING = 5;
+         //THERE'S NO 6! We use 6 for manual on_bus activity recording
+         public static final int WALKING = 7;
+         public static final int RUNNING = 8;
+         */
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -144,7 +155,7 @@ public class MainActivity extends ActionBarActivity implements
                     Toast.makeText(getApplicationContext(), ts + ":WALKING",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.runRadioButton) {
-                    confidences[3] = 100;
+                    confidences[8] = 100;
                     Toast.makeText(getApplicationContext(), ts + ":RUNNING",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.driveRadioButton) {
@@ -152,7 +163,7 @@ public class MainActivity extends ActionBarActivity implements
                     Toast.makeText(getApplicationContext(), ts + ":DRIVING",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.busRadioButton) {
-                    confidences[8] = 100;
+                    confidences[6] = 100;
                     Toast.makeText(getApplicationContext(), ts + ":ON THE BUS",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.bikeRadioButton) {
@@ -160,7 +171,7 @@ public class MainActivity extends ActionBarActivity implements
                     Toast.makeText(getApplicationContext(), ts + ":BIKING",
                             Toast.LENGTH_SHORT).show();
                 } else if (checkedId == R.id.stillRadioButton) {
-                    confidences[4] = 100;
+                    confidences[3] = 100;
                     Toast.makeText(getApplicationContext(), ts + ":STILL",
                             Toast.LENGTH_SHORT).show();
                 }
