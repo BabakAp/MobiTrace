@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -69,6 +70,8 @@ public class LocationUpdateService extends Service implements
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+        createLocationRequest();
+
         mGoogleApiClient.connect();
 
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -91,6 +94,7 @@ public class LocationUpdateService extends Service implements
 //        pendingIntent = PendingIntent.getService(getApplicationContext(),0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
+        mGoogleApiClient.connect();
         return START_STICKY;
     }
 
@@ -137,6 +141,9 @@ public class LocationUpdateService extends Service implements
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
+                        if (mLocationRequestHighAccuracy == null) {
+                            createLocationRequest();
+                        }
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         showNotification();
@@ -157,7 +164,7 @@ public class LocationUpdateService extends Service implements
     private void createLocationRequest() {
         mLocationRequestHighAccuracy = new LocationRequest();
         mLocationRequestHighAccuracy.setInterval(Constants.LOCATION_INTERVAL_MILLISECONDS);
-        mLocationRequestHighAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 100);
+        mLocationRequestHighAccuracy.setFastestInterval(Constants.LOCATION_INTERVAL_MILLISECONDS / 10);
         mLocationRequestHighAccuracy.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 //        mLocationRequestBalancedPowerAccuracy = new LocationRequest();
@@ -184,10 +191,11 @@ public class LocationUpdateService extends Service implements
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         mLastUpdateTime = getTimestamp();
-
         if (mLastLocation == null) {
             Log.e("LocationUpdateService", "Cannot retrieve location");
         }
+        Toast.makeText(this, "LOCATION UPDATED",
+                Toast.LENGTH_SHORT).show();
         /**
          * Write activity confidences to database
          */

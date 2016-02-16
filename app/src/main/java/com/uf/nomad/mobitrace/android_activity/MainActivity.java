@@ -39,7 +39,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.LocationUpdateService;
@@ -487,7 +486,7 @@ public class MainActivity extends ActionBarActivity implements
     /**
      * Create the location request and set the parameters as shown in this code sample:
      */
-    LocationRequest mLocationRequest;
+//    LocationRequest mLocationRequest;
     Location mCurrentLocation;
     String mLastUpdateTime;
     Boolean mRequestingLocationUpdates = false;
@@ -496,12 +495,12 @@ public class MainActivity extends ActionBarActivity implements
     Boolean mRequestingActivityUpdates = false;
     String mLastActivityUpdateTime;
 
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(100);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
+//    protected void createLocationRequest() {
+//        mLocationRequest = new LocationRequest();
+//        mLocationRequest.setInterval(10000);
+//        mLocationRequest.setFastestInterval(100);
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//    }
 
     public void startLocationUpdates() {
         if (!isMyServiceRunning(LocationUpdateService.class)) {

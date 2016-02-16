@@ -11,7 +11,7 @@ import android.util.Log;
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "mobitrace.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     //ACTIVITIES TABLE
     public static final String TABLE_ACTIVITIES = "activities";
