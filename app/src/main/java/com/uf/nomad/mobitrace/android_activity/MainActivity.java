@@ -1,5 +1,7 @@
 package com.uf.nomad.mobitrace.android_activity;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.NotificationManager;
@@ -11,6 +13,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -30,6 +33,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,7 +88,6 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         /**
          * Setup log file
          */
@@ -121,10 +124,13 @@ public class MainActivity extends ActionBarActivity implements
         //If there is a savedInstance, use those values
         updateValuesFromBundle(savedInstanceState);
 
+        SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean isActive = myPref.getBoolean("pref_key_services", true);
+        Log.i(Constants.APPTAG, "SERVICES ARE ACTIVE: " + isActive);
         /**
          * Start WiFi Scanning Service
          */
-        if (!isMyServiceRunning(WifiScanningService.class)) {
+        if (!isMyServiceRunning(WifiScanningService.class) && isActive) {
             Intent pushIntentWIFI = new Intent(getApplicationContext(), WifiScanningService.class);
             getApplicationContext().startService(pushIntentWIFI);
         }
@@ -177,6 +183,8 @@ public class MainActivity extends ActionBarActivity implements
                 int is_manual = 1;
                 boolean success = db.insertActivityRecord(confidences, Constants.getTimestamp(), is_manual);
                 db.close();
+                RadioButton selected = (RadioButton) findViewById(checkedId);
+                selected.setChecked(false);
                 if (!success) {
                     Log.d("MainActivity", "INSERTION OF ACTIVITY INTO DATABASE FAILED");
                 }
@@ -228,9 +236,11 @@ public class MainActivity extends ActionBarActivity implements
         } else {
             GooglePlayServicesUtil.getErrorDialog(code, this, 0);
         }
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean location_updates_enabled = sharedPref.getBoolean("pref_key_location_updates", false);
-        if (!location_updates_enabled) {
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+//        boolean location_updates_enabled = sharedPref.getBoolean("pref_key_location_updates", false);
+        SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean isActive = myPref.getBoolean("pref_key_services", true);
+        if (!isActive) {
             stopLocationUpdates();
         } else {
             startLocationUpdates();
@@ -276,14 +286,20 @@ public class MainActivity extends ActionBarActivity implements
                 return;
             }
         }
-        /**
-         * Retrieve and print last known location
-         */
-        getLocClicked();
-        /**
-         * Start Activity Recognition IntentService
-         */
-        startMyActivityRecognitionIntentService();
+        SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean isActive = myPref.getBoolean("pref_key_services", true);
+        if (isActive) {
+            /**
+             * Retrieve and print last known location
+             */
+            getLocClicked();
+            /**
+             * Start Activity Recognition IntentService
+             */
+            startMyActivityRecognitionIntentService();
+        } else {
+            stopActivityUpdates();
+        }
     }
 
     @Override
@@ -477,8 +493,8 @@ public class MainActivity extends ActionBarActivity implements
             showNotificationLocation();
         } else {
             logInfo("Last location: " +
-                            String.valueOf(mLastLocation.getLatitude() + " , " + String.valueOf(mLastLocation.getLongitude()))
-                            + "..."
+                    String.valueOf(mLastLocation.getLatitude() + " , " + String.valueOf(mLastLocation.getLongitude()))
+                    + "..."
             );
         }
     }
@@ -583,6 +599,7 @@ public class MainActivity extends ActionBarActivity implements
     private ActivityResultReceiver mActivityResultReceiver;
     protected String mActivityOutput;
 
+    @SuppressLint("ParcelCreator")
     class ActivityResultReceiver extends ResultReceiver {
         public ActivityResultReceiver(Handler handler) {
             super(handler);
@@ -632,15 +649,18 @@ public class MainActivity extends ActionBarActivity implements
             try {
                 bufferedWriter = new BufferedWriter(new FileWriter(mLog));
             } catch (IOException e) {
-//                e.printStackTrace();
-                System.err.println("Could not create log file");
+                Log.e(Constants.APPTAG, "Could not create log file");
             }
+        } else {
+            mLog = null;
+            Log.e(Constants.APPTAG, "EXTERNAL STORAGE NOT WRITABLE");
         }
     }
 
     /* Checks if external storage is available for read and write */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
+        String state = Environment.getExternalStorageState(Environment.getExternalStorageDirectory());
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
@@ -692,7 +712,7 @@ public class MainActivity extends ActionBarActivity implements
                 .setContentText(getString(R.string.turn_on_GPS))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setAutoCancel(true)
-                        // Get the Intent that starts the Location settings panel
+                // Get the Intent that starts the Location settings panel
                 .setContentIntent(pendingIntent);
 
         // Get an instance of the Notification Manager

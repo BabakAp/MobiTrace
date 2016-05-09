@@ -2,8 +2,6 @@ package com.uf.nomad.mobitrace;
 
 import android.util.Log;
 
-import com.uf.nomad.mobitrace.activity.ActivityUtils;
-
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,6 +11,8 @@ import java.util.Date;
  * Created by Babak on 3/30/2015.
  */
 public final class Constants {
+
+    public static final String APPTAG = "com.uf.nomad.mobitrace";
 
     public static final int MILLISECONDS_PER_SECOND = 1000;
     public static final int SUCCESS_RESULT = 0;
@@ -81,7 +81,7 @@ public final class Constants {
         try {
             mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
         } catch (Exception e) {
-            Log.e(ActivityUtils.APPTAG, "Internal error: date formatting exception.");
+            Log.e(Constants.APPTAG, "Internal error: date formatting exception.");
             return null;
         }
         // Format the timestamp according to the pattern, then localize the pattern

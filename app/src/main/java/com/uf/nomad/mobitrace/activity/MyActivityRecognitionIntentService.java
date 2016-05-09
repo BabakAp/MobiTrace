@@ -1,12 +1,10 @@
 package com.uf.nomad.mobitrace.activity;
 
 import android.app.IntentService;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
@@ -74,21 +72,6 @@ public class MyActivityRecognitionIntentService extends IntentService {
             editor.putInt(ActivityUtils.KEY_PREVIOUS_ACTIVITY_CONFIDENCE, confidence);
             editor.apply();
         }
-    }
-
-    /**
-     * Get a content Intent for the notification
-     *
-     * @return A PendingIntent that starts the device's Location Settings panel.
-     */
-    private PendingIntent getContentIntent() {
-
-        // Set the Intent action to open Location Settings
-        Intent gpsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-
-        // Create a PendingIntent to start an Activity
-        return PendingIntent.getActivity(getApplicationContext(), 0, gpsIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**

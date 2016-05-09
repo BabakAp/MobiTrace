@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import com.uf.nomad.mobitrace.Constants;
 import com.uf.nomad.mobitrace.LocationUpdateService;
 import com.uf.nomad.mobitrace.activity.ActivityRecognitionUpdateService;
+import com.uf.nomad.mobitrace.wifi.WifiScanningService;
 
 /**
  * Created by Babak on 4/1/2015.
@@ -15,18 +18,19 @@ import com.uf.nomad.mobitrace.activity.ActivityRecognitionUpdateService;
 public class BootCompletedIntentReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        //TODO: STOP ALL SERVICES IF FALSE
         SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean isActive =  myPref.getBoolean("pref_key_services", true);
-        System.out.println("SERVICES ARE ACTIVE: " + isActive);
+        boolean isActive = myPref.getBoolean("pref_key_services", true);
+        Log.i(Constants.APPTAG, "SERVICES ARE ACTIVE: " + isActive);
         if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction()) && isActive) {
-            System.err.println("BOOT COMPLETED");
-            //TODO: BackgroundService.class should be implemented
+            Log.i(Constants.APPTAG,"BOOT COMPLETED");
             Intent pushIntent1 = new Intent(context, LocationUpdateService.class);
             context.startService(pushIntent1);
 
             Intent pushIntent2 = new Intent(context, ActivityRecognitionUpdateService.class);
             context.startService(pushIntent2);
+
+            Intent pushIntentWIFI = new Intent(context, WifiScanningService.class);
+            context.startService(pushIntentWIFI);
         }
     }
 }

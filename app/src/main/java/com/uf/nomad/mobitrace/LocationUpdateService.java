@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,6 +13,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -29,7 +31,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.uf.nomad.mobitrace.activity.ActivityUtils;
 import com.uf.nomad.mobitrace.database.DataBaseHandler;
 
 import java.text.DateFormat;
@@ -82,8 +83,7 @@ public class LocationUpdateService extends Service implements
         initListeners();
     }
 
-    public void initListeners()
-    {
+    public void initListeners() {
         mSensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         mSensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
     }
@@ -204,11 +204,25 @@ public class LocationUpdateService extends Service implements
         }
         DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
         dataBaseHandler.openWritable();
-        boolean success = dataBaseHandler.insertLocationRecord(mLastLocation,orientation,Constants.getTimestamp());
+        boolean success = dataBaseHandler.insertLocationRecord(mLastLocation, orientation, Constants.getTimestamp());
         dataBaseHandler.close();
         if (!success) {
             Log.e("LocationUpdateService", "INSERTION OF LAST LOCATION INTO DATABASE FAILED");
         }
+
+        SharedPreferences myPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean isActive = myPref.getBoolean("pref_key_services", true);
+        /**
+         * stop location updates if settings set to false
+         */
+        if (!isActive) {
+            stopLocationUpdates();
+        }
+    }
+
+    protected void stopLocationUpdates() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(
+                mGoogleApiClient, this);
     }
 
     /**
@@ -231,7 +245,7 @@ public class LocationUpdateService extends Service implements
                 .setContentText(getString(R.string.turn_on_GPS))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setAutoCancel(true)
-                        // Get the Intent that starts the Location settings panel
+                // Get the Intent that starts the Location settings panel
                 .setContentIntent(pendingIntent);
 
         // Get an instance of the Notification Manager
@@ -251,7 +265,7 @@ public class LocationUpdateService extends Service implements
             try {
                 mDateFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance();
             } catch (Exception e) {
-                Log.e(ActivityUtils.APPTAG, getString(R.string.date_format_error));
+                Log.e(Constants.APPTAG, getString(R.string.date_format_error));
                 return null;
             }
             // Format the timestamp according to the pattern, then localize the pattern
@@ -267,6 +281,7 @@ public class LocationUpdateService extends Service implements
     float[] mGravity;
     float[] mGeomagnetic;
     float orientation[] = new float[3];
+
     /**
      * Called when sensor values have changed.
      * <p>See {@link SensorManager SensorManager}

@@ -54,7 +54,6 @@ public class WifiScanningService extends Service {
                 SharedPreferences.Editor editor = getSharedPreferences(Constants.LAST_SCANRESULT, MODE_PRIVATE).edit();
                 //Clear old data
                 editor.clear();
-                //TODO Test database insert
                 DataBaseHandler dataBaseHandler = new DataBaseHandler(getApplicationContext());
                 dataBaseHandler.openWritable();
                 for (ScanResult sr : results) {
